@@ -1,7 +1,7 @@
 {
-  "name": "wc26-match-picks",
+  "name": "match-diff",
   "version": "0.2.0",
-  "description": "World Cup 2026 — compare our win estimates to Polymarket odds",
+  "description": "MatchDiff — World Cup 2026 group stage vs Polymarket",
   "private": true,
   "scripts": {
     "dev": "next dev",
