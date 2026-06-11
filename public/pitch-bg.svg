@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="grassBase" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#183828" />
+      <stop offset="45%" stop-color="#234f36" />
+      <stop offset="100%" stop-color="#2a5c40" />
+    </linearGradient>
+    <pattern id="mowStripes" width="70" height="900" patternUnits="userSpaceOnUse">
+      <rect width="35" height="900" fill="rgba(255,255,255,0.07)" />
+      <rect x="35" width="35" height="900" fill="rgba(0,0,0,0.14)" />
+    </pattern>
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.08)" />
+      <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+    </radialGradient>
+    <radialGradient id="edgeVignette" cx="50%" cy="50%" r="75%">
+      <stop offset="55%" stop-color="rgba(0,0,0,0)" />
+      <stop offset="100%" stop-color="rgba(0,0,0,0.45)" />
+    </radialGradient>
+  </defs>
+
+  <!-- Grass -->
+  <rect width="1400" height="900" fill="url(#grassBase)" />
+  <rect width="1400" height="900" fill="url(#mowStripes)" />
+  <rect width="1400" height="900" fill="url(#centerGlow)" />
+
+  <!-- Pitch markings (landscape — goals left & right) -->
+  <g fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="3" stroke-linecap="round">
+    <!-- Touchlines -->
+    <rect x="48" y="48" width="1304" height="804" rx="2" />
+
+    <!-- Halfway line -->
+    <line x1="700" y1="48" x2="700" y2="852" />
+
+    <!-- Center circle + spot -->
+    <circle cx="700" cy="450" r="98" />
+    <circle cx="700" cy="450" r="5" fill="rgba(255,255,255,0.58)" stroke="none" />
+
+    <!-- Left penalty area -->
+    <rect x="48" y="228" width="176" height="444" />
+    <rect x="48" y="318" width="72" height="264" />
+    <circle cx="188" cy="450" r="5" fill="rgba(255,255,255,0.55)" stroke="none" />
+    <path d="M 224 318 A 98 98 0 0 1 224 582" stroke-width="2.5" />
+
+    <!-- Right penalty area -->
+    <rect x="1176" y="228" width="176" height="444" />
+    <rect x="1280" y="318" width="72" height="264" />
+    <circle cx="1212" cy="450" r="5" fill="rgba(255,255,255,0.55)" stroke="none" />
+    <path d="M 1176 318 A 98 98 0 0 0 1176 582" stroke-width="2.5" />
+
+    <!-- Corner arcs -->
+    <path d="M 108 48 A 24 24 0 0 0 48 72" stroke-width="2.5" />
+    <path d="M 1292 48 A 24 24 0 0 1 1352 72" stroke-width="2.5" />
+    <path d="M 108 852 A 24 24 0 0 1 48 828" stroke-width="2.5" />
+    <path d="M 1292 852 A 24 24 0 0 0 1352 828" stroke-width="2.5" />
+  </g>
+
+  <rect width="1400" height="900" fill="url(#edgeVignette)" />
+</svg>

@@ -10,7 +10,7 @@ import {
   gammaGetEventBySlug,
   parseThreeWayFromEvent,
 } from "@/lib/polymarket-gamma";
-import { canonicalizeTeam, type Wc2026Team } from "@/lib/teams";
+import type { Wc2026Team } from "@/lib/teams";
 
 export type { ThreeWayPrices, ParsedWcGame } from "@/lib/polymarket-gamma";
 

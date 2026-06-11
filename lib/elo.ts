@@ -4,14 +4,11 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import {
-  clampProbability,
-  DEFAULT_ELO,
   getTeamElo as ratingForTeam,
-  HOME_ADVANTAGE_ELO,
   homeWinProbability as homeWinFromRatings,
   type EloRatingsFile,
 } from "@/lib/elo-math";
-import { canonicalizeTeam, type Wc2026Team } from "@/lib/teams";
+import type { Wc2026Team } from "@/lib/teams";
 
 export {
   clampProbability,
@@ -92,10 +89,4 @@ export function h2hAdjustment(home: Wc2026Team, away: Wc2026Team): number {
   if (!rec || rec.total < 3) return 0;
   const homeRate = (rec.home_wins + 0.5 * rec.draws) / rec.total;
   return (homeRate - 0.5) * 0.06;
-}
-
-export function eloForName(name: string): number | null {
-  const team = canonicalizeTeam(name);
-  if (!team) return null;
-  return getTeamElo(team);
 }

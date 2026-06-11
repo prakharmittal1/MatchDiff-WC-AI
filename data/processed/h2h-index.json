@@ -1,5 +1,5 @@
 {
-  "built_at": "2026-05-19T01:39:57.242Z",
+  "built_at": "2026-06-10T04:59:35.079Z",
   "pairs": {
     "Scotland|England": {
       "home_wins": 24,
@@ -102,6 +102,12 @@
       "away_wins": 10,
       "draws": 11,
       "total": 39
+    },
+    "Argentina|South Africa": {
+      "home_wins": 1,
+      "away_wins": 1,
+      "draws": 0,
+      "total": 2
     },
     "Switzerland|France": {
       "home_wins": 9,
@@ -218,10 +224,10 @@
       "total": 38
     },
     "Norway|Sweden": {
-      "home_wins": 17,
+      "home_wins": 18,
       "away_wins": 26,
       "draws": 14,
-      "total": 57
+      "total": 58
     },
     "Germany|Netherlands": {
       "home_wins": 10,
@@ -604,8 +610,8 @@
     "Sweden|Greece": {
       "home_wins": 2,
       "away_wins": 1,
-      "draws": 1,
-      "total": 4
+      "draws": 2,
+      "total": 5
     },
     "Belgium|Spain": {
       "home_wins": 4,
@@ -878,10 +884,10 @@
       "total": 11
     },
     "Germany|Finland": {
-      "home_wins": 7,
+      "home_wins": 8,
       "away_wins": 1,
       "draws": 2,
-      "total": 10
+      "total": 11
     },
     "Austria|Finland": {
       "home_wins": 5,
@@ -890,10 +896,10 @@
       "total": 6
     },
     "Hungary|Finland": {
-      "home_wins": 6,
+      "home_wins": 7,
       "away_wins": 1,
       "draws": 2,
-      "total": 9
+      "total": 10
     },
     "Poland|Romania": {
       "home_wins": 4,
@@ -1322,10 +1328,10 @@
       "total": 5
     },
     "Portugal|Chile": {
-      "home_wins": 1,
+      "home_wins": 2,
       "away_wins": 0,
       "draws": 2,
-      "total": 3
+      "total": 4
     },
     "Egypt|Türkiye": {
       "home_wins": 2,
@@ -2048,10 +2054,10 @@
       "total": 3
     },
     "Colombia|Costa Rica": {
-      "home_wins": 9,
+      "home_wins": 10,
       "away_wins": 3,
       "draws": 0,
-      "total": 12
+      "total": 13
     },
     "Mexico|El Salvador": {
       "home_wins": 14,
@@ -3134,10 +3140,10 @@
       "total": 15
     },
     "Brazil|Panama": {
-      "home_wins": 3,
+      "home_wins": 4,
       "away_wins": 0,
       "draws": 1,
-      "total": 4
+      "total": 5
     },
     "Mexico|Peru": {
       "home_wins": 10,
@@ -4011,9 +4017,9 @@
     },
     "Peru|Spain": {
       "home_wins": 0,
-      "away_wins": 1,
+      "away_wins": 2,
       "draws": 0,
-      "total": 1
+      "total": 2
     },
     "Iceland|Germany": {
       "home_wins": 0,
@@ -5816,10 +5822,10 @@
       "total": 8
     },
     "Romania|Wales": {
-      "home_wins": 2,
+      "home_wins": 3,
       "away_wins": 0,
       "draws": 0,
-      "total": 2
+      "total": 3
     },
     "Trinidad and Tobago|Mexico": {
       "home_wins": 2,
@@ -5883,9 +5889,9 @@
     },
     "Greece|Italy": {
       "home_wins": 1,
-      "away_wins": 2,
+      "away_wins": 3,
       "draws": 2,
-      "total": 5
+      "total": 6
     },
     "Qatar|United Arab Emirates": {
       "home_wins": 11,
@@ -6669,9 +6675,9 @@
     },
     "Haiti|Peru": {
       "home_wins": 0,
-      "away_wins": 2,
+      "away_wins": 3,
       "draws": 2,
-      "total": 4
+      "total": 5
     },
     "Peru|Poland": {
       "home_wins": 0,
@@ -9663,9 +9669,9 @@
     },
     "United States|Germany": {
       "home_wins": 3,
-      "away_wins": 4,
+      "away_wins": 5,
       "draws": 0,
-      "total": 7
+      "total": 8
     },
     "Ecuador|United States": {
       "home_wins": 1,
@@ -10502,10 +10508,10 @@
       "total": 2
     },
     "Croatia|Slovenia": {
-      "home_wins": 2,
+      "home_wins": 3,
       "away_wins": 0,
       "draws": 4,
-      "total": 6
+      "total": 7
     },
     "Czechia|Netherlands": {
       "home_wins": 3,
@@ -10688,10 +10694,10 @@
       "total": 3
     },
     "Türkiye|North Macedonia": {
-      "home_wins": 2,
+      "home_wins": 3,
       "away_wins": 1,
       "draws": 1,
-      "total": 4
+      "total": 5
     },
     "Czechia|Norway": {
       "home_wins": 3,
@@ -10790,10 +10796,10 @@
       "total": 3
     },
     "Mexico|Serbia": {
-      "home_wins": 1,
+      "home_wins": 2,
       "away_wins": 2,
       "draws": 1,
-      "total": 4
+      "total": 5
     },
     "South Africa|Egypt": {
       "home_wins": 5,
@@ -11780,10 +11786,10 @@
       "total": 3
     },
     "Mexico|Australia": {
-      "home_wins": 0,
+      "home_wins": 1,
       "away_wins": 2,
       "draws": 1,
-      "total": 3
+      "total": 4
     },
     "Saudi Arabia|Brazil": {
       "home_wins": 0,
@@ -12049,17 +12055,11 @@
       "draws": 2,
       "total": 2
     },
-    "Argentina|South Africa": {
-      "home_wins": 1,
-      "away_wins": 0,
-      "draws": 0,
-      "total": 1
-    },
     "Austria|Tunisia": {
-      "home_wins": 1,
+      "home_wins": 2,
       "away_wins": 0,
       "draws": 1,
-      "total": 2
+      "total": 3
     },
     "South Korea|Czechia": {
       "home_wins": 0,
@@ -12184,8 +12184,8 @@
     "Morocco|Norway": {
       "home_wins": 0,
       "away_wins": 0,
-      "draws": 1,
-      "total": 1
+      "draws": 2,
+      "total": 2
     },
     "Cameroon|Austria": {
       "home_wins": 0,
@@ -12597,9 +12597,9 @@
     },
     "Jamaica|South Africa": {
       "home_wins": 0,
-      "away_wins": 0,
+      "away_wins": 1,
       "draws": 2,
-      "total": 2
+      "total": 3
     },
     "Norway|Jamaica": {
       "home_wins": 1,
@@ -12626,10 +12626,10 @@
       "total": 3
     },
     "Ecuador|Guatemala": {
-      "home_wins": 5,
+      "home_wins": 6,
       "away_wins": 0,
       "draws": 0,
-      "total": 5
+      "total": 6
     },
     "Albania|Norway": {
       "home_wins": 0,
@@ -13036,8 +13036,8 @@
     "Bosnia and Herzegovina|North Macedonia": {
       "home_wins": 1,
       "away_wins": 0,
-      "draws": 2,
-      "total": 3
+      "draws": 3,
+      "total": 4
     },
     "Czechia|Australia": {
       "home_wins": 1,
@@ -13707,9 +13707,9 @@
     },
     "Croatia|Belgium": {
       "home_wins": 2,
-      "away_wins": 1,
+      "away_wins": 2,
       "draws": 1,
-      "total": 4
+      "total": 5
     },
     "France|Algeria": {
       "home_wins": 1,
@@ -13719,9 +13719,9 @@
     },
     "Poland|Ukraine": {
       "home_wins": 2,
-      "away_wins": 1,
+      "away_wins": 2,
       "draws": 2,
-      "total": 5
+      "total": 6
     },
     "North Macedonia|Slovakia": {
       "home_wins": 0,
@@ -14312,10 +14312,10 @@
       "total": 3
     },
     "Nigeria|Jamaica": {
-      "home_wins": 1,
+      "home_wins": 2,
       "away_wins": 0,
       "draws": 2,
-      "total": 3
+      "total": 4
     },
     "Slovakia|Ukraine": {
       "home_wins": 1,
@@ -14408,10 +14408,10 @@
       "total": 1
     },
     "Denmark|Ukraine": {
-      "home_wins": 1,
+      "home_wins": 2,
       "away_wins": 0,
       "draws": 1,
-      "total": 2
+      "total": 3
     },
     "France|Egypt": {
       "home_wins": 1,
@@ -14984,10 +14984,10 @@
       "total": 2
     },
     "South Korea|Trinidad and Tobago": {
-      "home_wins": 0,
+      "home_wins": 1,
       "away_wins": 0,
       "draws": 1,
-      "total": 1
+      "total": 2
     },
     "South Korea|Jordan": {
       "home_wins": 1,
@@ -15261,9 +15261,9 @@
     },
     "France|Ivory Coast": {
       "home_wins": 2,
-      "away_wins": 0,
+      "away_wins": 1,
       "draws": 1,
-      "total": 3
+      "total": 4
     },
     "Paraguay|El Salvador": {
       "home_wins": 1,
@@ -15476,10 +15476,10 @@
       "total": 2
     },
     "Mexico|Ghana": {
-      "home_wins": 2,
+      "home_wins": 3,
       "away_wins": 0,
       "draws": 0,
-      "total": 2
+      "total": 3
     },
     "Netherlands|Ecuador": {
       "home_wins": 1,
@@ -16484,10 +16484,10 @@
       "total": 1
     },
     "Brazil|Egypt": {
-      "home_wins": 2,
+      "home_wins": 3,
       "away_wins": 0,
       "draws": 0,
-      "total": 2
+      "total": 3
     },
     "South Africa|New Zealand": {
       "home_wins": 1,
@@ -16498,8 +16498,8 @@
     "Spain|Iraq": {
       "home_wins": 1,
       "away_wins": 0,
-      "draws": 0,
-      "total": 1
+      "draws": 1,
+      "total": 2
     },
     "Algeria|Uruguay": {
       "home_wins": 1,
@@ -17342,10 +17342,10 @@
       "total": 3
     },
     "Japan|Iceland": {
-      "home_wins": 1,
+      "home_wins": 2,
       "away_wins": 0,
       "draws": 0,
-      "total": 1
+      "total": 2
     },
     "Bosnia and Herzegovina|Brazil": {
       "home_wins": 0,
@@ -18002,10 +18002,10 @@
       "total": 1
     },
     "Belgium|Tunisia": {
-      "home_wins": 2,
+      "home_wins": 3,
       "away_wins": 0,
       "draws": 0,
-      "total": 2
+      "total": 3
     },
     "El Salvador|Spain": {
       "home_wins": 0,
@@ -18398,10 +18398,10 @@
       "total": 1
     },
     "Canada|Uzbekistan": {
-      "home_wins": 1,
+      "home_wins": 2,
       "away_wins": 0,
       "draws": 0,
-      "total": 1
+      "total": 2
     },
     "Czechia|Croatia": {
       "home_wins": 0,
@@ -18694,8 +18694,8 @@
     "Poland|Nigeria": {
       "home_wins": 0,
       "away_wins": 1,
-      "draws": 0,
-      "total": 1
+      "draws": 1,
+      "total": 2
     },
     "Scotland|Costa Rica": {
       "home_wins": 0,
@@ -19328,10 +19328,10 @@
       "total": 1
     },
     "Republic of Ireland|Qatar": {
-      "home_wins": 1,
+      "home_wins": 2,
       "away_wins": 0,
       "draws": 1,
-      "total": 2
+      "total": 3
     },
     "Germany|North Macedonia": {
       "home_wins": 0,
@@ -19354,8 +19354,8 @@
     "Qatar|El Salvador": {
       "home_wins": 2,
       "away_wins": 0,
-      "draws": 0,
-      "total": 2
+      "draws": 1,
+      "total": 3
     },
     "Qatar|Panama": {
       "home_wins": 1,
@@ -19520,10 +19520,10 @@
       "total": 1
     },
     "Argentina|Honduras": {
-      "home_wins": 1,
+      "home_wins": 2,
       "away_wins": 0,
       "draws": 0,
-      "total": 1
+      "total": 2
     },
     "Cameroon|Uzbekistan": {
       "home_wins": 0,
@@ -19838,10 +19838,10 @@
       "total": 1
     },
     "South Korea|El Salvador": {
-      "home_wins": 0,
+      "home_wins": 1,
       "away_wins": 0,
       "draws": 1,
-      "total": 1
+      "total": 2
     },
     "Haiti|Qatar": {
       "home_wins": 1,
@@ -20306,6 +20306,120 @@
       "total": 1
     },
     "Australia|Curaçao": {
+      "home_wins": 1,
+      "away_wins": 0,
+      "draws": 0,
+      "total": 1
+    },
+    "Ecuador|Saudi Arabia": {
+      "home_wins": 1,
+      "away_wins": 0,
+      "draws": 0,
+      "total": 1
+    },
+    "Scotland|Curaçao": {
+      "home_wins": 1,
+      "away_wins": 0,
+      "draws": 0,
+      "total": 1
+    },
+    "Cape Verde|Serbia": {
+      "home_wins": 1,
+      "away_wins": 0,
+      "draws": 0,
+      "total": 1
+    },
+    "Switzerland|Jordan": {
+      "home_wins": 1,
+      "away_wins": 0,
+      "draws": 0,
+      "total": 1
+    },
+    "United States|Senegal": {
+      "home_wins": 1,
+      "away_wins": 0,
+      "draws": 0,
+      "total": 1
+    },
+    "Haiti|New Zealand": {
+      "home_wins": 1,
+      "away_wins": 0,
+      "draws": 0,
+      "total": 1
+    },
+    "Wales|Ghana": {
+      "home_wins": 0,
+      "away_wins": 0,
+      "draws": 1,
+      "total": 1
+    },
+    "DR Congo|Denmark": {
+      "home_wins": 0,
+      "away_wins": 0,
+      "draws": 1,
+      "total": 1
+    },
+    "Netherlands|Algeria": {
+      "home_wins": 0,
+      "away_wins": 1,
+      "draws": 0,
+      "total": 1
+    },
+    "Guatemala|Czechia": {
+      "home_wins": 0,
+      "away_wins": 1,
+      "draws": 0,
+      "total": 1
+    },
+    "Iran|Mali": {
+      "home_wins": 1,
+      "away_wins": 0,
+      "draws": 0,
+      "total": 1
+    },
+    "Canada|Republic of Ireland": {
+      "home_wins": 0,
+      "away_wins": 0,
+      "draws": 1,
+      "total": 1
+    },
+    "Australia|Switzerland": {
+      "home_wins": 0,
+      "away_wins": 0,
+      "draws": 1,
+      "total": 1
+    },
+    "Bolivia|Scotland": {
+      "home_wins": 0,
+      "away_wins": 1,
+      "draws": 0,
+      "total": 1
+    },
+    "England|New Zealand": {
+      "home_wins": 1,
+      "away_wins": 0,
+      "draws": 0,
+      "total": 1
+    },
+    "Panama|Bosnia and Herzegovina": {
+      "home_wins": 0,
+      "away_wins": 0,
+      "draws": 1,
+      "total": 1
+    },
+    "Venezuela|Türkiye": {
+      "home_wins": 0,
+      "away_wins": 1,
+      "draws": 0,
+      "total": 1
+    },
+    "Jordan|Colombia": {
+      "home_wins": 0,
+      "away_wins": 1,
+      "draws": 0,
+      "total": 1
+    },
+    "Netherlands|Uzbekistan": {
       "home_wins": 1,
       "away_wins": 0,
       "draws": 0,

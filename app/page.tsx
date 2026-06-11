@@ -4,7 +4,5 @@ import { getCachedDashboardFixtures } from "@/lib/live-fixtures";
 export default async function Home() {
   const bootstrap = await getCachedDashboardFixtures();
 
-  return (
-    <Dashboard fixtures={bootstrap.fixtures} />
-  );
+  return <Dashboard fixtures={bootstrap.fixtures} />;
 }

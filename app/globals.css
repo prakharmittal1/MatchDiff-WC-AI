@@ -5,101 +5,269 @@
 :root {
   color-scheme: light;
 
-  --background: #fafafa;
-  --foreground: #0a0a0a;
-  --surface: #ffffff;
-  --grid: rgba(0, 0, 0, 0.05);
-  --pitch: rgba(0, 0, 0, 0.025);
+  /* Pitch surface */
+  --background: #1f4532;
+  --foreground: #f1f5f9;
+  --surface: #2a2f36;
+  --surface-muted: #343a42;
+  --surface-elevated: #3f454e;
+  --border: #4b535e;
+  --surface-text: #f8fafc;
+  --surface-text-muted: #cbd5e1;
+  --surface-text-subtle: #94a3b8;
 
-  --brand-magenta: #ec1163;
-  --brand-magenta-soft: #ff408e;
-  --brand-lime: #00b352;
-  --brand-lime-soft: #5eef9b;
-  --brand-amber: #d98700;
-  --brand-sky: #0094c2;
-  --brand-tangerine: #ff5a1f;
-
-  --tile-odds-home-bg: color-mix(in srgb, var(--brand-lime) 18%, white);
-  --tile-odds-home-text: #047857;
-  --tile-odds-home-ring: color-mix(in srgb, var(--brand-lime) 45%, transparent);
-  --tile-odds-draw-bg: #fafafa;
-  --tile-odds-draw-text: #52525b;
-  --tile-odds-draw-ring: #e4e4e7;
-  --tile-odds-away-bg: color-mix(in srgb, #ef4444 14%, white);
-  --tile-odds-away-text: #b91c1c;
-  --tile-odds-away-ring: color-mix(in srgb, #ef4444 35%, transparent);
-
-  --poly-pill-home: #16a34a;
-  --poly-pill-home-shadow: #15803d;
-  --poly-pill-away: #ef4444;
-  --poly-pill-away-shadow: #b91c1c;
+  /* Match grid tile sizing — keep modal height in sync with 4 stacked tiles */
+  --match-tile-height: 6.5rem;
+  --match-grid-gap: 0.75rem;
+  --match-modal-base-width: 56rem; /* 70% of max-w-7xl (80rem) */
+  --match-modal-base-height: calc(var(--match-tile-height) * 4 + var(--match-grid-gap) * 3);
+  --match-modal-scale: 1.4;
+  --match-modal-width: calc(var(--match-modal-base-width) * var(--match-modal-scale));
+  --match-modal-height: calc(var(--match-modal-base-height) * var(--match-modal-scale));
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-brand: var(--brand-magenta);
-  --color-brand-soft: var(--brand-magenta-soft);
-  --color-alpha: var(--brand-lime);
-  --color-alpha-soft: var(--brand-lime-soft);
-  --color-warn: var(--brand-amber);
-  --color-sky: var(--brand-sky);
-  --color-tangerine: var(--brand-tangerine);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-plex-mono);
+}
+
+html {
+  height: 100%;
 }
 
 body {
-  background:
-    repeating-linear-gradient(
-      0deg,
-      var(--pitch) 0,
-      var(--pitch) 1px,
-      transparent 1px,
-      transparent 80px
-    ),
-    linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 32px 32px,
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 32px 32px,
-    var(--background);
+  position: relative;
+  min-height: 100%;
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  letter-spacing: -0.011em;
+}
+
+/* Full soccer pitch — markings, stripes, grass (see public/pitch-bg.svg) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    url("/pitch-bg.svg") center center / cover no-repeat,
+    linear-gradient(90deg, #183828 0%, #234f36 45%, #2a5c40 100%);
+}
+
+/* Subtle vignette — cards carry most foreground contrast */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 70% 50% at 50% 50%,
+      rgba(255, 255, 255, 0.05) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 120% 90% at 50% 50%,
+      transparent 42%,
+      rgba(0, 0, 0, 0.32) 100%
+    );
 }
 
 .brand-marquee {
   background: linear-gradient(
-    100deg,
-    var(--brand-magenta) 0%,
-    var(--brand-tangerine) 38%,
-    var(--brand-amber) 62%,
-    var(--brand-lime) 100%
+    95deg,
+    #6ee7b7 0%,
+    #34d399 45%,
+    #fcd34d 100%
   );
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
 }
 
-.alpha-glow {
+.page-hero {
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 18, 24, 0.78);
+  backdrop-filter: blur(14px);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--brand-lime) 60%, transparent),
-    0 0 18px color-mix(in srgb, var(--brand-lime) 40%, transparent);
+    0 0 0 1px rgba(0, 0, 0, 0.2),
+    0 12px 40px rgba(0, 0, 0, 0.35);
 }
 
-.brand-ring {
+.hero-title {
+  color: #ffffff;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.55),
+    0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.hero-kicker {
+  color: rgba(167, 243, 208, 0.92);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.hero-lede {
+  color: #e2e8f0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.text-on-surface {
+  color: var(--surface-text);
+}
+
+.text-on-surface-muted {
+  color: var(--surface-text-muted);
+}
+
+.text-on-surface-subtle {
+  color: var(--surface-text-subtle);
+}
+
+.surface-card {
+  background: color-mix(in srgb, var(--surface) 98%, transparent);
+  border: 1px solid var(--border);
+  color: var(--surface-text);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--brand-magenta) 30%, transparent),
-    0 8px 24px -8px color-mix(in srgb, var(--brand-magenta) 60%, transparent);
+    0 0 0 1px rgba(0, 0, 0, 0.25),
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    0 20px 48px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(10px);
+}
+
+/* Light surfaces on dark pitch — match grid + analysis panel */
+.light-surface {
+  --surface: #ffffff;
+  --surface-muted: #f8fafc;
+  --surface-elevated: #ffffff;
+  --border: #e2e8f0;
+  --surface-text: #0f172a;
+  --surface-text-muted: #475569;
+  --surface-text-subtle: #64748b;
+  color: var(--surface-text);
+}
+
+.light-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  color: var(--surface-text);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.05),
+    0 4px 16px rgba(15, 23, 42, 0.1);
+}
+
+.match-tile {
+  min-height: var(--match-tile-height);
+}
+
+.light-surface .text-on-surface {
+  color: var(--surface-text);
+}
+
+.light-surface .text-on-surface-muted {
+  color: var(--surface-text-muted);
+}
+
+.light-surface .text-on-surface-subtle {
+  color: var(--surface-text-subtle);
+}
+
+/* Light, readable panel for match breakdown (sits on dark pitch) — inline dashboard only */
+.analysis-panel-light.light-surface {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.55),
+    0 8px 32px rgba(0, 0, 0, 0.28);
+}
+
+.analysis-panel-light .analysis-panel-header {
+  border-bottom-color: #e2e8f0;
+  background: linear-gradient(90deg, #ecfdf5 0%, #f0f9ff 55%, #faf5ff 100%);
+}
+
+/* Match analysis modal — enlarged match tile */
+.match-modal-panel {
+  --modal-from-x: 0px;
+  --modal-from-y: 24px;
+  --modal-from-scale: 0.92;
+  transform: translate3d(var(--modal-from-x), var(--modal-from-y), 0)
+    scale(var(--modal-from-scale));
+  opacity: 0;
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+.match-modal-panel.light-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.05),
+    0 8px 32px rgba(15, 23, 42, 0.14);
+}
+
+.match-modal-panel .match-modal-tile-header {
+  background: #ffffff;
+}
+
+.match-modal-backdrop {
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(28px) saturate(1.15);
+  -webkit-backdrop-filter: blur(28px) saturate(1.15);
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+
+.match-modal-root--open .match-modal-backdrop {
+  opacity: 1;
+}
+
+.match-modal-panel--open {
+  animation: match-modal-expand 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes match-modal-expand {
+  from {
+    transform: translate3d(var(--modal-from-x), var(--modal-from-y), 0)
+      scale(var(--modal-from-scale));
+    opacity: 0.65;
+    border-radius: 0.75rem;
+  }
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+    border-radius: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .match-modal-panel,
+  .match-modal-panel--open {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+
+  .match-modal-backdrop {
+    transition: none;
+    opacity: 1;
+  }
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--foreground) 25%, transparent) transparent;
+  scrollbar-color: color-mix(in srgb, var(--foreground) 20%, transparent) transparent;
 }
 *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 *::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--foreground) 25%, transparent);
+  background: color-mix(in srgb, var(--foreground) 20%, transparent);
   border-radius: 4px;
 }
 *::-webkit-scrollbar-track {

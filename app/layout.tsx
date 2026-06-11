@@ -1,36 +1,40 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "World Cup 2026 Match Picks · USA · Canada · Mexico",
+  title: "WC26 AI Match Analyst · USA · Canada · Mexico",
   description:
-    "Compare our World Cup 2026 win estimates to betting odds. " +
-    "See when the market might be too high or too low on a team.",
-  applicationName: "WC26 Match Picks",
+    "Multi-source RAG agent for World Cup 2026 — team ratings, match history, venue, news, and Polymarket odds synthesized by an LLM.",
+  applicationName: "WC26 AI Match Analyst",
   keywords: [
     "World Cup 2026",
     "FIFA",
+    "RAG",
+    "LLM",
+    "AI analyst",
     "Polymarket",
     "soccer",
     "football",
-    "betting odds",
     "win probability",
   ],
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ec1163",
+  themeColor: "#2a2f36",
   colorScheme: "light",
 };
 
@@ -42,7 +46,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${plexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

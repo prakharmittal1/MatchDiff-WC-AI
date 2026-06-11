@@ -1,5 +1,5 @@
 import type { SentimentSnapshot, SentimentTone } from "@/lib/sentiment/types";
-import { sentimentSourceLabel, sentimentToneLabel } from "@/lib/ui-copy";
+import { sentimentToneLabel } from "@/lib/ui-copy";
 
 type Props = {
   sentiment: SentimentSnapshot;
@@ -16,86 +16,76 @@ function toneClass(tone: SentimentTone): string {
     case "mixed":
       return "text-amber-700";
     default:
-      return "text-zinc-500";
+      return "text-slate-500";
   }
 }
 
 export function SentimentBuzz({ sentiment, home, away }: Props) {
-  if (sentiment.post_count === 0) return null;
+  const injuryReports = sentiment.injury_reports ?? [];
+  if (sentiment.post_count === 0 && injuryReports.length === 0) return null;
 
-  const activeSources = sentiment.sources.filter((s) => s.status === "ok" && s.count > 0);
+  const quality = sentiment.coverage_quality ?? "weak";
+  const showTone =
+    quality === "strong" && (sentiment.home_tone !== "unknown" || sentiment.away_tone !== "unknown");
+  const title = quality === "weak" ? "Recent headlines" : "Headline mood";
 
   return (
-    <section className="rounded-xl border border-sky-100 bg-sky-50/80 p-3 shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-xs font-semibold text-sky-900">News headlines</h3>
-        <span className="font-mono text-[10px] text-sky-700/80">
-          {sentiment.post_count} article{sentiment.post_count === 1 ? "" : "s"}
-        </span>
-      </div>
+    <section className="rounded-lg bg-violet-50/70 px-3 py-3 text-xs text-slate-600">
+      <p className="text-[10px] font-medium uppercase tracking-wide text-violet-700/60">
+        {title}
+        {sentiment.post_count > 0 && ` (${sentiment.post_count})`}
+      </p>
 
-      {sentiment.summary_line && (
-        <p className="mt-2 text-sm leading-relaxed text-sky-950">{sentiment.summary_line}</p>
+      {quality === "weak" && sentiment.post_count > 0 && (
+        <p className="mt-1.5 text-slate-500">
+          Pre-tournament news is often TV schedules and watch guides.
+        </p>
       )}
 
-      <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-        <div className="rounded-lg border border-white/80 bg-white/70 px-2 py-1.5">
-          <span className="text-zinc-500">{home}</span>
-          <p className={`font-medium ${toneClass(sentiment.home_tone)}`}>
-            {sentimentToneLabel(sentiment.home_tone)}
-          </p>
+      {showTone && (
+        <div className="mt-2 grid grid-cols-2 gap-3">
+          <div>
+            <p className="text-[10px] text-slate-400">{home}</p>
+            <p className={`font-medium ${toneClass(sentiment.home_tone)}`}>
+              {sentimentToneLabel(sentiment.home_tone)}
+            </p>
+          </div>
+          <div>
+            <p className="text-[10px] text-slate-400">{away}</p>
+            <p className={`font-medium ${toneClass(sentiment.away_tone)}`}>
+              {sentimentToneLabel(sentiment.away_tone)}
+            </p>
+          </div>
         </div>
-        <div className="rounded-lg border border-white/80 bg-white/70 px-2 py-1.5">
-          <span className="text-zinc-500">{away}</span>
-          <p className={`font-medium ${toneClass(sentiment.away_tone)}`}>
-            {sentimentToneLabel(sentiment.away_tone)}
-          </p>
-        </div>
-      </div>
+      )}
 
-      {sentiment.themes.length > 0 && (
-        <ul className="mt-2 flex flex-wrap gap-1">
-          {sentiment.themes.map((theme) => (
-            <li
-              key={theme}
-              className="rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-sky-900 ring-1 ring-sky-100"
-            >
-              {theme}
-            </li>
-          ))}
-        </ul>
+      {sentiment.themes.filter((theme) => theme !== "Injuries & fitness").length > 0 && (
+        <p className="mt-2 text-[10px] text-violet-700/55">
+          {sentiment.themes.filter((theme) => theme !== "Injuries & fitness").join(" · ")}
+        </p>
       )}
 
       {sentiment.sample_quotes.length > 0 && (
-        <ul className="mt-2 space-y-1.5 border-t border-sky-100/80 pt-2">
+        <ul className="mt-2 divide-y divide-violet-100/90">
           {sentiment.sample_quotes.map((q, i) => (
-            <li key={i} className="text-xs leading-snug text-sky-950">
+            <li key={i} className="py-2 leading-snug first:pt-0 last:pb-0">
               {q.url ? (
                 <a
                   href={q.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline decoration-sky-300/60 underline-offset-2 hover:text-sky-800"
+                  className="text-slate-700 underline decoration-violet-200 underline-offset-2 hover:text-slate-900"
                 >
                   {q.text}
                 </a>
               ) : (
                 q.text
               )}
-              <span className="ml-1 text-[10px] text-sky-700/70">
-                · {sentimentSourceLabel(q.source)}
-              </span>
             </li>
           ))}
         </ul>
       )}
 
-      {activeSources.length > 0 && (
-        <p className="mt-2 text-[10px] text-sky-800/70">
-          Sources:{" "}
-          {activeSources.map((s) => `${s.label} (${s.count})`).join(" · ")}
-        </p>
-      )}
     </section>
   );
 }

@@ -18,8 +18,12 @@ export type MismatchVerdict = {
   gap_pp: number | null;
 };
 
+function pctInt(p: number): number {
+  return Math.round(p * 100);
+}
+
 function formatPct(p: number): string {
-  return `${Math.round(p * 100)}%`;
+  return `${pctInt(p)}%`;
 }
 
 function buildFactorsUsed(result: Omit<AnalyzeResult, "verdict">): string[] {
@@ -47,7 +51,7 @@ function buildFactorsUsed(result: Omit<AnalyzeResult, "verdict">): string[] {
   }
 
   if (result.sentiment && result.sentiment.post_count > 0) {
-    factors.push(`News (${result.sentiment.post_count} headlines)`);
+    factors.push(`Buzz (${result.sentiment.post_count} posts)`);
   }
 
   return factors;
@@ -75,7 +79,9 @@ export function buildMismatchVerdict(
     };
   }
 
-  const gap_pp = Math.round(edge * 100);
+  // Derive the gap from the rounded percentages we actually display, so the
+  // shown numbers always reconcile (e.g. 22% − 6% reads as +16%, not +15%).
+  const gap_pp = pctInt(p_expected) - pctInt(p_market);
   const marketPct = formatPct(p_market);
   let marketExtra = "";
   if (market.draw != null && market.away_win != null) {

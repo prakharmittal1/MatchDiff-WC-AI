@@ -102,22 +102,25 @@ function buildTravelNotes(
   if (profile?.altitude_band === "high") {
     if (SEA_LEVEL_FEDERATIONS.has(away) || away === "United States") {
       notes.push(
-        `${away} often plays from sea-level conditions — altitude at ${profile.city} can be a disadvantage without prep.`,
+        `${away} often play from sea-level conditions — altitude at ${profile.city} can be a disadvantage without prep.`,
       );
+    }
+    if (home === "Mexico" || home === "Ecuador" || home === "Colombia" || home === "Bolivia") {
+      notes.push(`${home} has more experience at altitude in the Americas.`);
     }
     if (away === "Mexico" || away === "Ecuador" || away === "Colombia" || away === "Bolivia") {
       notes.push(`${away} has more experience at altitude in the Americas.`);
     }
   }
 
-  if (profile?.country === "United States" && !HOSTS.has(away)) {
+  if (profile?.country === "United States" && !HOSTS.has(away) && !HOSTS.has(home)) {
     notes.push(
-      `Intercontinental travel: ${away} may face long flights and time-zone shifts before kickoff.`,
+      `Both squads are based in the US/Mexico/Canada host region — travel is mostly between host cities, not long-haul intercontinental hops.`,
     );
   }
 
-  if (profile?.country === "Mexico" && home === "Mexico" && away === "United States") {
-    notes.push("Short regional travel — familiar CONCACAF conditions for both sides.");
+  if (profile?.country === "Mexico" && (home === "Mexico" || away === "Mexico" || home === "United States" || away === "United States")) {
+    notes.push("Short regional travel between North American host cities.");
   }
 
   if (
@@ -128,6 +131,24 @@ function buildTravelNotes(
   }
 
   return notes;
+}
+
+function coHostPlayingAtHomeNote(
+  home: Wc2026Team,
+  away: Wc2026Team,
+  profile: VenueProfile,
+): string | null {
+  for (const team of [home, away] as const) {
+    if (!HOSTS.has(team)) continue;
+    if (
+      (team === "Mexico" && profile.country === "Mexico") ||
+      (team === "United States" && profile.country === "United States") ||
+      (team === "Canada" && profile.country === "Canada")
+    ) {
+      return `${team} are a 2026 co-host playing in ${profile.city} — local support and familiar logistics, not a traditional home fixture.`;
+    }
+  }
+  return null;
 }
 
 function finalizeContext(
@@ -141,6 +162,8 @@ function finalizeContext(
   const env = collectVenueEnvironmentNotes(profile, input.home, input.away, {
     isWorldCup: isWc,
   });
+  const coHostNote = isWc ? coHostPlayingAtHomeNote(input.home, input.away, profile) : null;
+  if (coHostNote) travel.unshift(coHostNote);
   if (isWc) {
     travel.push(WC26_TOURNAMENT_NOTES[0]!);
   }
@@ -198,14 +221,8 @@ export function resolveMatchContext(input: ResolveMatchContextInput): MatchConte
 
   const inferred = inferHostVenue(input.home, input.away, input.kickoff_iso, isWc);
   if (inferred) {
-    const label = `${inferred.city} (${input.home} host)`;
+    const label = inferred.city;
     return finalizeContext(inferred, label, "inferred", input, isWc);
-  }
-
-  if (HOSTS.has(input.home) && isWc) {
-    travelFromProfile.push(
-      `${input.home} is a 2026 World Cup co-host — home crowd and familiar logistics help the home side.`,
-    );
   }
 
   return {
@@ -240,7 +257,7 @@ export function matchContextHeadline(ctx: MatchContext): string | null {
     return ctx.city;
   }
   if (ctx.travel_notes.length > 0 && !ctx.city) {
-    return "Travel and home advantage may matter";
+    return "Host-city travel and conditions may matter";
   }
   return null;
 }

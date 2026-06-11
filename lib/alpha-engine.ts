@@ -15,6 +15,16 @@ import {
   HOME_ADVANTAGE_ELO,
 } from "@/lib/elo";
 import { generateAnalystInsight, isLlmAnalystConfigured } from "@/lib/llm-analyst";
+import {
+  combineFactors,
+  injuryFactor,
+  recentFormFactor,
+  restAsymmetryFactor,
+  squadValueFactor,
+} from "@/lib/model-factors";
+import { recentFormFor } from "@/lib/recent-form";
+import { restDaysForFixture } from "@/lib/rest-days";
+import { kickoffDateUtc } from "@/lib/wc26-schedule";
 import { quoteHomeMoneylineYes } from "@/lib/polymarket-prices";
 import { isRagAvailable, searchRagForMatch } from "@/lib/rag";
 import { blendEloWithRag } from "@/lib/rag-form";
@@ -99,8 +109,10 @@ function formatSummary(
 export type AnalyzeMatchOptions = {
   /** Default true when an LLM provider is configured. */
   includeLlm?: boolean;
-  /** Default true when GNews or NewsAPI keys are set. */
+  /** Default true when news sources are configured. */
   includeSentiment?: boolean;
+  /** Bypass sentiment file/memory cache (e.g. refresh headlines). */
+  refreshSentiment?: boolean;
 };
 
 export async function analyzeMatch(
@@ -118,11 +130,10 @@ export async function analyzeMatch(
   const elo_away = getTeamElo(input.away, ratings);
   const h2h_adj = h2hAdjustment(input.home, input.away);
   const base_p_home = homeWinProbability(input.home, input.away, { ratings });
-  const p_model = clampProbability(base_p_home + h2h_adj);
 
   if (ratings.source === "seed-ratings" || ratings.source === "inline-default") {
     data_gaps.push(
-      "Elo uses seed ratings — run `npm run data:build -- --file data/results.csv`",
+      "Using starter team ratings — run `npm run data:build -- --file data/results.csv` for fuller history",
     );
   }
 
@@ -143,22 +154,54 @@ export async function analyzeMatch(
   let sentiment = null;
   if (includeSentiment) {
     try {
-      sentiment = await gatherMatchSentiment(input.home, input.away, input.kickoff_iso);
+      sentiment = await gatherMatchSentiment(input.home, input.away, input.kickoff_iso, {
+        useCache: !options.refreshSentiment,
+      });
       if (sentiment && sentiment.post_count === 0) {
         const errors = sentiment.sources
           .filter((s) => s.status === "error")
           .map((s) => s.detail)
           .filter(Boolean);
         if (errors.length > 0) {
-          data_gaps.push(`News buzz: ${errors[0]}`);
+          data_gaps.push(`Social buzz: ${errors[0]}`);
         } else {
           data_gaps.push("No recent news headlines for this match");
         }
       }
     } catch {
-      data_gaps.push("News headline lookup failed");
+      data_gaps.push("Sentiment lookup failed");
     }
   }
+
+  const kickoffDate = kickoffDateUtc(input.kickoff_iso) ?? input.kickoff_iso.slice(0, 10);
+  const { homeRestDays, awayRestDays } = restDaysForFixture(
+    input.home,
+    input.away,
+    kickoffDate,
+  );
+  const adjustments = combineFactors([
+    restAsymmetryFactor({
+      homeTeam: input.home,
+      awayTeam: input.away,
+      homeRestDays,
+      awayRestDays,
+    }),
+    recentFormFactor(
+      input.home,
+      input.away,
+      recentFormFor(input.home),
+      recentFormFor(input.away),
+    ),
+    squadValueFactor(input.home, input.away),
+    injuryFactor(input.home, input.away, sentiment?.injury_reports ?? []),
+  ]);
+
+  // Fold the combined Elo delta into the win-probability baseline.
+  const adjusted_p_home = homeWinProbability(input.home, input.away, {
+    ratings,
+    homeAdvantage: HOME_ADVANTAGE_ELO + adjustments.total_elo_delta,
+  });
+  const p_model = clampProbability(adjusted_p_home + h2h_adj);
 
   let p_market: number | null =
     input.p_market != null && Number.isFinite(input.p_market) ? input.p_market : null;
@@ -235,6 +278,7 @@ export async function analyzeMatch(
         h2h_adjustment: Number(h2h_adj.toFixed(4)),
         base_p_home: Number(base_p_home.toFixed(4)),
       },
+      adjustments,
       market: buildMarketBlock(
         marketSlug,
         marketSource,
@@ -258,7 +302,7 @@ export async function analyzeMatch(
     } else {
       llm_skip_reason = skipReason;
       if (p_expected_source === "elo" && rag.hits.length > 0) {
-        data_gaps.push("LLM unavailable — using Elo-only expected (enable Ollama or Gemini for RAG-weighted probability)");
+        data_gaps.push("LLM unavailable — using team ratings only (enable Ollama or Gemini for richer analysis)");
       }
     }
   }
@@ -284,6 +328,7 @@ export async function analyzeMatch(
       h2h_adjustment: Number(h2h_adj.toFixed(4)),
       base_p_home: Number(base_p_home.toFixed(4)),
     },
+    adjustments,
     market: buildMarketBlock(
       marketSlug,
       marketSource,

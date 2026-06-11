@@ -19,6 +19,21 @@ export type SentimentQuote = {
   at?: string;
 };
 
+export type SentimentCoverageQuality = "strong" | "weak" | "none";
+
+export type InjuryStatus = "ruled_out" | "doubtful" | "fit" | "unknown";
+
+export type InjuryReport = {
+  team: Wc2026Team;
+  player: string | null;
+  status: InjuryStatus;
+  headline: string;
+  url?: string;
+  source: "news_rss" | "curated";
+  at?: string;
+  note?: string;
+};
+
 export type SentimentSnapshot = {
   home: Wc2026Team;
   away: Wc2026Team;
@@ -27,6 +42,10 @@ export type SentimentSnapshot = {
   post_count: number;
   home_tone: SentimentTone;
   away_tone: SentimentTone;
+  /** Whether headlines carry real opinion vs schedules / logistics. */
+  coverage_quality: SentimentCoverageQuality;
+  /** Structured squad news parsed from headlines + curated file. */
+  injury_reports: InjuryReport[];
   themes: string[];
   sample_quotes: SentimentQuote[];
   sources: SentimentSourceStatus[];

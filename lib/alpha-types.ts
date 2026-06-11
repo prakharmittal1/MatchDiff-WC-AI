@@ -33,6 +33,28 @@ export type AnalyzeMatchInput = {
   is_world_cup?: boolean;
 };
 
+export type ModelFactorId =
+  | "rest_asymmetry"
+  | "recent_form"
+  | "squad_value"
+  | "injuries";
+
+/** One quantitative adjustment to the home team's effective Elo. */
+export type ModelFactor = {
+  id: ModelFactorId;
+  label: string;
+  /** Signed Elo-point delta applied to the HOME side (positive favors home). */
+  elo_delta: number;
+  /** Plain-language explanation for UI + LLM prompt. */
+  detail: string;
+};
+
+export type ModelAdjustments = {
+  factors: ModelFactor[];
+  /** Sum of all factor deltas, in Elo points (home perspective). */
+  total_elo_delta: number;
+};
+
 export type ExpectedSource = "llm" | "rag_elo_blend" | "elo";
 
 export type LlmStance = "agree" | "disagree" | "cautious";
@@ -72,6 +94,8 @@ export type AnalyzeResult = {
     h2h_adjustment: number;
     base_p_home: number;
   };
+  /** Quantitative factor adjustments (rest, form, squad value, injuries). */
+  adjustments: ModelAdjustments;
   market: {
     slug: string | null;
     source: "polymarket" | "client" | "none";

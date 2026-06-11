@@ -1,5 +1,3 @@
-import "server-only";
-
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -10,8 +8,8 @@ const memory = new Map<string, { at: number; snapshot: SentimentSnapshot }>();
 
 function cacheTtlMs(): number {
   const raw = process.env.SENTIMENT_CACHE_TTL_MS?.trim();
-  const n = raw ? Number(raw) : 6 * 60 * 60 * 1000;
-  return Number.isFinite(n) && n > 0 ? n : 6 * 60 * 60 * 1000;
+  const n = raw ? Number(raw) : 30 * 60 * 1000;
+  return Number.isFinite(n) && n > 0 ? n : 30 * 60 * 1000;
 }
 
 function cacheKey(home: string, away: string, kickoff_iso: string): string {

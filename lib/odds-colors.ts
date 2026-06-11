@@ -112,21 +112,3 @@ export function outcomeOddsStyle(probability: number, variant: OutcomeSide): Odd
     borderColor: mixRgb(RED_SHADOW_LIGHT, RED_SHADOW_DARK, t * 0.9),
   };
 }
-
-/** @deprecated Use polyPillStyle() — fixed colors, no weighting. */
-export const POLY_PILL_CLASSES: Record<OutcomeSide, string> = {
-  home: "bg-[#22c55e] text-white shadow-[0_3px_0_#16a34a]",
-  draw: "bg-white text-zinc-900 shadow-[0_3px_0_#d4d4d8] ring-1 ring-zinc-200",
-  away: "bg-[#ef4444] text-white shadow-[0_3px_0_#dc2626]",
-};
-
-/** @deprecated Use outcomeOddsStyle() — fixed pastel tokens. */
-export const OUTCOME_ODDS_CLASSES: Record<OutcomeSide, string> = {
-  home: "bg-[var(--tile-odds-home-bg)] text-[var(--tile-odds-home-text)] ring-1 ring-[var(--tile-odds-home-ring)]",
-  draw: "bg-[var(--tile-odds-draw-bg)] text-[var(--tile-odds-draw-text)] ring-1 ring-[var(--tile-odds-draw-ring)]",
-  away: "bg-[var(--tile-odds-away-bg)] text-[var(--tile-odds-away-text)] ring-1 ring-[var(--tile-odds-away-ring)]",
-};
-
-export function oddsCellClassName(extra?: string): string {
-  return ["ring-1", extra].filter(Boolean).join(" ");
-}

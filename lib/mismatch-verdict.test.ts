@@ -25,6 +25,7 @@ function baseResult(overrides: Partial<AnalyzeResult> = {}): AnalyzeResult {
       h2h_adjustment: 0.02,
       base_p_home: 0.7,
     },
+    adjustments: { factors: [], total_elo_delta: 0 },
     market: {
       slug: "fifwc-mex-usa",
       source: "polymarket",
@@ -67,7 +68,7 @@ describe("buildMismatchVerdict", () => {
     const v = buildMismatchVerdict(baseResult());
     expect(v.alignment).toBe("we_higher");
     expect(v.gap_pp).toBe(18);
-    expect(v.headline).toBe("Odds look low on Mexico");
+    expect(v.headline).toBe("Our win estimate for Mexico is higher than the market");
     expect(v.factors_used.some((f) => /Past meetings/i.test(f))).toBe(true);
     expect(v.factors_used.some((f) => /^AI /i.test(f))).toBe(true);
   });

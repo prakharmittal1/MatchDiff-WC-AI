@@ -55,4 +55,50 @@ describe("parseVersusTitle", () => {
     expect(sides?.home).toBe("South Korea");
     expect(sides?.away).toBe("Czechia");
   });
+
+  it("canonicalizes Bosnia-Herzegovina from Polymarket titles", () => {
+    const sides = parseVersusTitle("Canada vs. Bosnia-Herzegovina");
+    expect(sides?.home).toBe("Canada");
+    expect(sides?.away).toBe("Bosnia and Herzegovina");
+  });
+});
+
+describe("parseThreeWayFromEvent — Bosnia", () => {
+  it("parses Canada vs Bosnia-Herzegovina moneyline", () => {
+    const event: GammaEvent = {
+      id: "test-bih",
+      title: "Canada vs. Bosnia-Herzegovina",
+      slug: "fifwc-can-bih-2026-06-12",
+      eventDate: "2026-06-12",
+      endDate: "2026-06-12T19:00:00Z",
+      markets: [
+        {
+          question: "Will Canada win on 2026-06-12?",
+          outcomes: '["Yes", "No"]',
+          outcomePrices: '["0.55", "0.45"]',
+          active: true,
+          closed: false,
+        },
+        {
+          question: "Will Canada vs. Bosnia and Herzegovina end in a draw?",
+          outcomes: '["Yes", "No"]',
+          outcomePrices: '["0.25", "0.75"]',
+          active: true,
+          closed: false,
+        },
+        {
+          question: "Will Bosnia and Herzegovina win on 2026-06-12?",
+          outcomes: '["Yes", "No"]',
+          outcomePrices: '["0.20", "0.80"]',
+          active: true,
+          closed: false,
+        },
+      ],
+    };
+
+    const parsed = parseThreeWayFromEvent(event);
+    expect(parsed).not.toBeNull();
+    expect(parsed!.away).toBe("Bosnia and Herzegovina");
+    expect(parsed!.prices.home).toBeCloseTo(0.55, 3);
+  });
 });

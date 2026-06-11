@@ -77,6 +77,28 @@ function h2hKey(home: Wc2026Team, away: Wc2026Team): string {
   return `${home}|${away}`;
 }
 
+const FORM_WINDOW = 10; // last N results per team
+const FORM_HALF_LIFE = 4; // matches; exponential decay
+
+type FormResult = { date: string; outcome: number }; // outcome: 1 win, 0.5 draw, 0 loss
+
+/** Exponentially weighted form in [-1, 1] from a team's most recent results. */
+function computeFormScore(results: FormResult[]): { score: number; matches: number } {
+  const recent = results.slice(-FORM_WINDOW);
+  if (recent.length === 0) return { score: 0, matches: 0 };
+  const lambda = Math.log(2) / FORM_HALF_LIFE;
+  let weighted = 0;
+  let weightSum = 0;
+  // Most recent (end of array) gets highest weight.
+  for (let i = 0; i < recent.length; i++) {
+    const ago = recent.length - 1 - i;
+    const w = Math.exp(-lambda * ago);
+    weighted += w * (recent[i]!.outcome * 2 - 1); // map [0,1] -> [-1,1]
+    weightSum += w;
+  }
+  return { score: weightSum > 0 ? weighted / weightSum : 0, matches: recent.length };
+}
+
 async function readCsv(path: string): Promise<Row[]> {
   const rows: Row[] = [];
   const parser = createReadStream(path).pipe(
@@ -113,6 +135,7 @@ async function main(): Promise<void> {
 
   const h2h = new Map<string, { home_wins: number; away_wins: number; draws: number; total: number }>();
   const ragCandidates: PlaybookChunk[] = [];
+  const formResults = new Map<Wc2026Team, FormResult[]>();
 
   if (existsSync(file)) {
     process.stderr.write(`[data:build] Reading ${file}…\n`);
@@ -159,6 +182,17 @@ async function main(): Promise<void> {
       }
 
       updateElo(ratings, home, away, homeScore, awayScore, neutral);
+
+      if (date) {
+        const homeOutcome = homeScore > awayScore ? 1 : homeScore < awayScore ? 0 : 0.5;
+        const homeArr = formResults.get(home) ?? [];
+        homeArr.push({ date, outcome: homeOutcome });
+        formResults.set(home, homeArr);
+        const awayArr = formResults.get(away) ?? [];
+        awayArr.push({ date, outcome: 1 - homeOutcome });
+        formResults.set(away, awayArr);
+      }
+
       const key = h2hKey(home, away);
       const rec = h2h.get(key) ?? { home_wins: 0, away_wins: 0, draws: 0, total: 0 };
       if (homeScore > awayScore) rec.home_wins += 1;
@@ -193,6 +227,21 @@ async function main(): Promise<void> {
     pairs: Object.fromEntries(h2h.entries()),
   };
   writeFileSync(join(OUT_DIR, "h2h-index.json"), JSON.stringify(h2hOut, null, 2));
+
+  const formScores: Record<string, { score: number; matches: number }> = {};
+  for (const [team, results] of formResults.entries()) {
+    results.sort((a, b) => a.date.localeCompare(b.date));
+    const f = computeFormScore(results);
+    formScores[team] = { score: Number(f.score.toFixed(4)), matches: f.matches };
+  }
+  const formOut = {
+    built_at,
+    source: existsSync(file) ? `csv:${file}` : "seed",
+    window: FORM_WINDOW,
+    half_life: FORM_HALF_LIFE,
+    teams: formScores,
+  };
+  writeFileSync(join(OUT_DIR, "recent-form.json"), JSON.stringify(formOut, null, 2));
 
   const wcChunks = ragCandidates.filter((c) =>
     /world cup|fifa world/i.test(c.tournament),

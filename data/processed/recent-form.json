@@ -1,0 +1,324 @@
+{
+  "built_at": "2026-06-10T04:59:35.079Z",
+  "source": "csv:data/results.csv",
+  "window": 10,
+  "half_life": 4,
+  "teams": {
+    "Scotland": {
+      "score": 0.099,
+      "matches": 10
+    },
+    "England": {
+      "score": 0.4234,
+      "matches": 10
+    },
+    "Wales": {
+      "score": -0.3414,
+      "matches": 10
+    },
+    "United States": {
+      "score": -0.0284,
+      "matches": 10
+    },
+    "Canada": {
+      "score": 0.2906,
+      "matches": 10
+    },
+    "Uruguay": {
+      "score": 0.0374,
+      "matches": 10
+    },
+    "Argentina": {
+      "score": 0.5488,
+      "matches": 10
+    },
+    "Austria": {
+      "score": 0.4879,
+      "matches": 10
+    },
+    "Hungary": {
+      "score": -0.0127,
+      "matches": 10
+    },
+    "Belgium": {
+      "score": 0.6434,
+      "matches": 10
+    },
+    "France": {
+      "score": 0.4202,
+      "matches": 10
+    },
+    "Switzerland": {
+      "score": 0.359,
+      "matches": 10
+    },
+    "Netherlands": {
+      "score": 0.2844,
+      "matches": 10
+    },
+    "South Africa": {
+      "score": -0.1808,
+      "matches": 10
+    },
+    "Germany": {
+      "score": 0.5376,
+      "matches": 10
+    },
+    "Sweden": {
+      "score": 0.0284,
+      "matches": 10
+    },
+    "Norway": {
+      "score": 0.2777,
+      "matches": 10
+    },
+    "Denmark": {
+      "score": 0.3535,
+      "matches": 10
+    },
+    "Italy": {
+      "score": -0.1098,
+      "matches": 10
+    },
+    "Chile": {
+      "score": -0.1817,
+      "matches": 10
+    },
+    "Finland": {
+      "score": -0.5186,
+      "matches": 10
+    },
+    "Brazil": {
+      "score": 0.4402,
+      "matches": 10
+    },
+    "Japan": {
+      "score": 0.6872,
+      "matches": 10
+    },
+    "China": {
+      "score": -0.5383,
+      "matches": 10
+    },
+    "Paraguay": {
+      "score": -0.045,
+      "matches": 10
+    },
+    "Romania": {
+      "score": -0.3796,
+      "matches": 10
+    },
+    "Greece": {
+      "score": -0.3297,
+      "matches": 10
+    },
+    "Spain": {
+      "score": 0.4469,
+      "matches": 10
+    },
+    "Egypt": {
+      "score": -0.0611,
+      "matches": 10
+    },
+    "Costa Rica": {
+      "score": -0.4118,
+      "matches": 10
+    },
+    "El Salvador": {
+      "score": -0.5553,
+      "matches": 10
+    },
+    "Guatemala": {
+      "score": -0.6772,
+      "matches": 10
+    },
+    "Poland": {
+      "score": -0.1236,
+      "matches": 10
+    },
+    "Portugal": {
+      "score": 0.4794,
+      "matches": 10
+    },
+    "New Zealand": {
+      "score": -0.6583,
+      "matches": 10
+    },
+    "Australia": {
+      "score": -0.0108,
+      "matches": 10
+    },
+    "Mexico": {
+      "score": 0.6512,
+      "matches": 10
+    },
+    "Türkiye": {
+      "score": 0.4887,
+      "matches": 10
+    },
+    "Republic of Ireland": {
+      "score": 0.2315,
+      "matches": 10
+    },
+    "Haiti": {
+      "score": -0.1786,
+      "matches": 10
+    },
+    "Jamaica": {
+      "score": -0.5705,
+      "matches": 10
+    },
+    "Curaçao": {
+      "score": -0.4686,
+      "matches": 10
+    },
+    "Bolivia": {
+      "score": -0.4185,
+      "matches": 10
+    },
+    "Peru": {
+      "score": -0.4494,
+      "matches": 10
+    },
+    "Honduras": {
+      "score": -0.0577,
+      "matches": 10
+    },
+    "Trinidad and Tobago": {
+      "score": -0.6143,
+      "matches": 10
+    },
+    "Colombia": {
+      "score": 0.4285,
+      "matches": 10
+    },
+    "Panama": {
+      "score": 0.0516,
+      "matches": 10
+    },
+    "Venezuela": {
+      "score": -0.2896,
+      "matches": 10
+    },
+    "Ecuador": {
+      "score": 0.5007,
+      "matches": 10
+    },
+    "Slovakia": {
+      "score": -0.1608,
+      "matches": 10
+    },
+    "Croatia": {
+      "score": 0.0388,
+      "matches": 10
+    },
+    "Iceland": {
+      "score": -0.5229,
+      "matches": 10
+    },
+    "Albania": {
+      "score": -0.4473,
+      "matches": 10
+    },
+    "Iran": {
+      "score": 0.2436,
+      "matches": 10
+    },
+    "South Korea": {
+      "score": 0.3336,
+      "matches": 10
+    },
+    "Serbia": {
+      "score": -0.532,
+      "matches": 10
+    },
+    "Ghana": {
+      "score": -0.4739,
+      "matches": 10
+    },
+    "Nigeria": {
+      "score": 0.4032,
+      "matches": 10
+    },
+    "DR Congo": {
+      "score": 0.0962,
+      "matches": 10
+    },
+    "Cameroon": {
+      "score": -0.1721,
+      "matches": 10
+    },
+    "Mali": {
+      "score": -0.5145,
+      "matches": 10
+    },
+    "Tunisia": {
+      "score": -0.2461,
+      "matches": 10
+    },
+    "Iraq": {
+      "score": -0.0239,
+      "matches": 10
+    },
+    "Morocco": {
+      "score": 0.5051,
+      "matches": 10
+    },
+    "Senegal": {
+      "score": 0.0816,
+      "matches": 10
+    },
+    "Ivory Coast": {
+      "score": 0.3278,
+      "matches": 10
+    },
+    "Jordan": {
+      "score": -0.2377,
+      "matches": 10
+    },
+    "Algeria": {
+      "score": 0.3891,
+      "matches": 10
+    },
+    "Saudi Arabia": {
+      "score": -0.6763,
+      "matches": 10
+    },
+    "Qatar": {
+      "score": -0.2494,
+      "matches": 10
+    },
+    "United Arab Emirates": {
+      "score": -0.5215,
+      "matches": 10
+    },
+    "Cape Verde": {
+      "score": 0.0321,
+      "matches": 10
+    },
+    "Slovenia": {
+      "score": -0.3266,
+      "matches": 10
+    },
+    "Ukraine": {
+      "score": 0.0249,
+      "matches": 10
+    },
+    "North Macedonia": {
+      "score": -0.5138,
+      "matches": 10
+    },
+    "Czechia": {
+      "score": 0.201,
+      "matches": 10
+    },
+    "Uzbekistan": {
+      "score": -0.2854,
+      "matches": 10
+    },
+    "Bosnia and Herzegovina": {
+      "score": 0.0038,
+      "matches": 10
+    }
+  }
+}

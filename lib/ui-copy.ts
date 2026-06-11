@@ -1,18 +1,20 @@
-import type { AnalyzeResult } from "@/lib/alpha-types";
-import type { SentimentSourceId, SentimentTone } from "@/lib/sentiment/types";
+import type { InjuryStatus, SentimentTone } from "@/lib/sentiment/types";
 
 const NA = "—";
+
+/** Strip internal rating jargon from user-facing strings. */
+export function plainEnglish(text: string): string {
+  return text
+    .replace(/\bElo-only expected\b/gi, "team ratings only")
+    .replace(/\bElo(?:[ -]?points?| ratings?| score)?\b/gi, "team ratings")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
 
 /** Show a probability as a whole number percent (e.g. 64%). */
 export function formatChance(p: number | null | undefined): string {
   if (p == null || !Number.isFinite(p)) return NA;
   return `${Math.round(p * 100)}%`;
-}
-
-/** Polymarket style price in cents (e.g. 67¢). */
-export function formatMarketCents(p: number | null | undefined): string {
-  if (p == null || !Number.isFinite(p)) return NA;
-  return `${Math.round(p * 100)}¢`;
 }
 
 /** Signed gap vs market (e.g. +18%). */
@@ -28,37 +30,47 @@ export function formatGapBadge(gapPp: number | null | undefined): string | null 
   return gapPp >= 0 ? `+${gapPp}%` : `${gapPp}%`;
 }
 
-/** One-line verdict vs betting market. */
+/** One-line verdict vs betting market (first-listed team in the fixture). */
 export function marketVerdictLine(
   kind: "underpriced" | "overpriced" | "aligned" | "no_market",
   team: string,
 ): string {
   switch (kind) {
     case "underpriced":
-      return `Odds look low on ${team}`;
+      return `Our win estimate for ${team} is higher than the market`;
     case "overpriced":
-      return `Odds look high on ${team}`;
+      return `Our win estimate for ${team} is lower than the market`;
     case "aligned":
-      return "Matches market odds";
+      return `Our estimate matches the market on ${team}`;
     case "no_market":
       return "No betting odds yet";
   }
 }
 
-export function stanceLabel(stance: NonNullable<AnalyzeResult["llm"]>["stance"]): string {
-  switch (stance) {
-    case "agree":
-      return "Possible value";
-    case "disagree":
-      return "Odds look fair";
-    default:
-      return "Hard to call";
+/** UI-only labels; API model IDs stay unchanged. */
+const LLM_MODEL_DISPLAY_ALIASES: Record<string, string> = {
+  "groq:llama-3.1-8b-instant": "llama-3.8",
+};
+
+export function formatLlmModelDisplay(model: string): string {
+  const aliased = LLM_MODEL_DISPLAY_ALIASES[model];
+  if (aliased) return aliased;
+
+  if (model.startsWith("ollama:")) {
+    return `Ollama ${model.slice("ollama:".length)}`;
   }
+  if (model.startsWith("gemini:")) {
+    return `Gemini ${model.slice("gemini:".length)}`;
+  }
+  if (model.startsWith("groq:")) {
+    return `Groq ${model.slice("groq:".length)}`;
+  }
+  return model;
 }
 
 /** Turn server data gap strings into short, plain notes. */
 export function friendlyDataGap(raw: string): string {
-  if (raw.includes("seed ratings") || raw.includes("data:build")) {
+  if (raw.includes("starter team ratings") || raw.includes("seed ratings") || raw.includes("data:build")) {
     return "Limited team history in our database.";
   }
   if (raw.includes("No RAG chunks")) {
@@ -79,7 +91,7 @@ export function friendlyDataGap(raw: string): string {
   if (raw.includes("No recent news")) {
     return "No recent news headlines for this match.";
   }
-  return raw.replace(/\s*—\s*/g, ". ").replace(/-/g, " ");
+  return plainEnglish(raw.replace(/\s*—\s*/g, ". ").replace(/-/g, " "));
 }
 
 export function sentimentToneLabel(tone: SentimentTone): string {
@@ -95,20 +107,36 @@ export function sentimentToneLabel(tone: SentimentTone): string {
   }
 }
 
-export function sentimentSourceLabel(_source: SentimentSourceId): string {
-  return "News";
+/** Format a factor nudge as a signed chip (no unit label). */
+export function formatFactorDelta(eloDelta: number): string {
+  const rounded = Math.round(eloDelta);
+  if (rounded === 0) return "0";
+  return rounded > 0 ? `+${rounded}` : `${rounded}`;
+}
+
+export function injuryStatusLabel(status: InjuryStatus): string {
+  switch (status) {
+    case "ruled_out":
+      return "Ruled out";
+    case "doubtful":
+      return "Doubtful";
+    case "fit":
+      return "Expected to play";
+    default:
+      return "Injury concern";
+  }
 }
 
 export function friendlyLlmSkip(skipReason?: string): string | null {
   if (!skipReason) return null;
   if (skipReason === "no_api_key") {
-    return "Extra written analysis is turned off.";
+    return "AI match read isn't turned on — we're showing stats-only picks for now.";
   }
   if (skipReason === "disabled") {
-    return "Extra written analysis was skipped.";
+    return "AI match read was skipped for this request.";
   }
   if (skipReason.startsWith("error:")) {
-    return "Extra written analysis is not available right now.";
+    return "AI match read couldn't run — showing stats-only picks instead.";
   }
   return null;
 }

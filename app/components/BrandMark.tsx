@@ -2,48 +2,47 @@ import { flagFor, HOST_NATIONS } from "@/lib/flags";
 
 export function BrandMark() {
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-3.5">
       <svg
         viewBox="0 0 64 64"
-        width={56}
-        height={56}
+        width={52}
+        height={52}
         aria-label="World Cup 2026 mark"
         role="img"
         className="shrink-0"
       >
         <defs>
-          <linearGradient id="wc26grad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="var(--brand-magenta)" />
-            <stop offset="45%" stopColor="var(--brand-tangerine)" />
-            <stop offset="75%" stopColor="var(--brand-amber)" />
-            <stop offset="100%" stopColor="var(--brand-lime)" />
+          <linearGradient id="wc26pitch" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#059669" />
+            <stop offset="100%" stopColor="#047857" />
           </linearGradient>
         </defs>
-        <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#wc26grad)" />
-        <g fill="currentColor" className="text-zinc-50">
-          <path d="M22 14h20v6c0 5-3 9-7 10v6h4v4H25v-4h4v-6c-4-1-7-5-7-10v-6z" opacity="0.92" />
-          <rect x="21" y="44" width="22" height="3" rx="1.2" opacity="0.92" />
-          <text
-            x="32"
-            y="36"
-            textAnchor="middle"
-            fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
-            fontWeight="800"
-            fontSize="11"
-            letterSpacing="-0.5"
-            fill="var(--brand-magenta)"
-          >
-            26
-          </text>
-        </g>
+        <rect x="2" y="2" width="60" height="60" rx="12" fill="url(#wc26pitch)" />
+        <circle cx="32" cy="32" r="14" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+        <circle cx="32" cy="32" r="2.5" fill="rgba(255,255,255,0.9)" />
+        <line x1="32" y1="4" x2="32" y2="18" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+        <line x1="32" y1="46" x2="32" y2="60" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+        <text
+          x="32"
+          y="38"
+          textAnchor="middle"
+          fontFamily="var(--font-plex-mono), ui-monospace, monospace"
+          fontWeight="600"
+          fontSize="13"
+          fill="#fbbf24"
+        >
+          26
+        </text>
       </svg>
 
       <div className="flex flex-col leading-tight">
-        <span className="brand-marquee font-mono text-[11px] font-bold uppercase tracking-[0.32em]">
-          FIFA World Cup 26
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-300/90 [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]">
+          FIFA World Cup
         </span>
-        <span className="text-base font-semibold text-zinc-950 sm:text-lg">Match Picks</span>
-        <span className="mt-0.5 flex items-center gap-1 font-mono text-[10px] text-zinc-500">
+        <span className="text-lg font-semibold tracking-tight text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)] sm:text-xl">
+          Betting Advisor
+        </span>
+        <span className="mt-0.5 flex items-center gap-1 font-mono text-[10px] text-slate-300">
           {HOST_NATIONS.map((h) => (
             <span key={h.tag} className="flex items-center gap-0.5">
               <span aria-hidden className="text-sm leading-none">
@@ -52,7 +51,6 @@ export function BrandMark() {
               <span>{h.tag}</span>
             </span>
           ))}
-          <span className="ml-1 opacity-50">· hosts</span>
         </span>
       </div>
     </div>

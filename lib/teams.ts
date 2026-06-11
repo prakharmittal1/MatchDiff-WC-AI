@@ -177,6 +177,8 @@ const RAW_ALIASES: Record<string, Wc2026Team> = {
 
   // Bosnia
   "bosnia": "Bosnia and Herzegovina",
+  "bosnia-herzegovina": "Bosnia and Herzegovina",
+  "bosnia herzegovina": "Bosnia and Herzegovina",
   "bih": "Bosnia and Herzegovina",
 
   // North Macedonia

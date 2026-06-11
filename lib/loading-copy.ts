@@ -4,12 +4,10 @@ export const SOCCER_LOADING_MESSAGES = [
   "Reading venue, travel, and altitude…",
   "Comparing our pick to market odds…",
   "Digging into head-to-head history…",
-  "Factoring in home advantage…",
-  "Sizing up this World Cup matchup…",
-  "Warming up the win probabilities…",
   "Checking win, draw, and loss prices…",
-  "Looking for where the odds look off…",
+  "Looking for where our model differs from the market…",
   "Running the numbers on both squads…",
+  "Factoring in host-city travel across North America…",
 ] as const;
 
 export function pickSoccerLoadingMessage(): string {

@@ -45,16 +45,15 @@ export function circadianTravelNote(
   away: Wc2026Team,
   profile: VenueProfile,
 ): string | null {
-  const intercontinental =
-    profile.country === "United States" &&
-    !["Mexico", "United States", "Canada"].includes(away);
+  const teams = [home, away];
+  const bothHosts = teams.every((t) => ["Mexico", "United States", "Canada"].includes(t));
+  if (bothHosts) return null;
 
-  if (intercontinental) {
-    return `${away} may cross several time zones before kickoff — circadian misalignment can hurt sharpness early in the match.`;
-  }
+  const nonHost = teams.find((t) => !["Mexico", "United States", "Canada"].includes(t));
+  if (!nonHost) return null;
 
-  if (profile.country === "Canada" && home !== "Canada" && away !== "Canada") {
-    return "Long-haul travel into Canada can compress recovery time before kickoff.";
+  if (profile.country === "United States" || profile.country === "Mexico" || profile.country === "Canada") {
+    return `${nonHost} travel between host cities in the US, Mexico, and Canada — shorter hops than a typical overseas World Cup, but time zones still vary.`;
   }
 
   return null;

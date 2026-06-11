@@ -21,11 +21,11 @@ import {
   UPCOMING_FIXTURES,
 } from "@/lib/fixtures";
 import { resolveMatchContext } from "@/lib/match-context";
+import { loadGroupStageFixtures } from "@/lib/wc26-group-fixtures";
 import { lookupWc26ScheduledVenue } from "@/lib/wc26-schedule";
 import { quoteHomeMoneylineYes } from "@/lib/polymarket-prices";
 
 const RANGE_DAYS = 120;
-const DISPLAY_CAP = 24;
 
 export type FixturesBootstrap = FixtureFeedMeta & { fixtures: Fixture[] };
 
@@ -162,7 +162,7 @@ async function enrichBriefsWithPolymarket(
   enriched.sort((a, b) => Date.parse(a.kickoff_iso) - Date.parse(b.kickoff_iso));
   const hasPolymarket = enriched.some((x) => x.market_price_source === "polymarket");
   return {
-    fixtures: enriched.slice(0, DISPLAY_CAP),
+    fixtures: enriched,
     hasPolymarket,
   };
 }
@@ -205,10 +205,31 @@ export async function loadDashboardFixtures(): Promise<FixturesBootstrap> {
   const stubDetail =
     "Using demo fixtures — Polymarket or football-data.org unavailable.";
 
+  let polyGames: Awaited<ReturnType<typeof fetchPolymarketWcGames>> = [];
+  let polyError: string | undefined;
+
   try {
-    const polyGames = await fetchPolymarketWcGames();
+    polyGames = await fetchPolymarketWcGames();
+  } catch (err) {
+    polyError = err instanceof Error ? err.message : String(err);
+  }
+
+  const groupFixtures = loadGroupStageFixtures(polyGames);
+  if (groupFixtures.length > 0) {
+    const withOdds = groupFixtures.filter((f) => f.market_price_source === "polymarket").length;
+    const detail = polyError
+      ? `${groupFixtures.length} group stage matches; Polymarket unavailable (${polyError}).`
+      : `${groupFixtures.length} group stage matches; ${withOdds} with Polymarket odds.`;
+    return {
+      fixtures: groupFixtures,
+      source: withOdds > 0 ? "polymarket" : "bundled",
+      detail,
+    };
+  }
+
+  try {
     if (polyGames.length > 0) {
-      const fixtures = polyGames.slice(0, DISPLAY_CAP).map(polyGameToFixture);
+      const fixtures = polyGames.map(polyGameToFixture);
       return {
         fixtures,
         source: "polymarket",
@@ -270,7 +291,7 @@ async function loadFootballDataOrBundled(stubDetail: string): Promise<FixturesBo
 
 const cachedDashboardFixtures = unstable_cache(
   async () => loadDashboardFixtures(),
-  ["dashboard-fixtures-poly-wc-v4"],
+  ["dashboard-fixtures-group-stage-v1"],
   { revalidate: 300 },
 );
 
