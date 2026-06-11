@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="MatchDiff">
+  <rect width="180" height="180" rx="40" fill="#047857"/>
+  <circle cx="90" cy="90" r="58" fill="#f8fafc"/>
+  <path
+    fill="#1e293b"
+    d="M90 44 99.5 51l5 15-9.5 7.5h-15L70 66l5-15zm0 92-9.5-7.5-5-15 9.5-7.5h15l9.5 7.5-5 15zm-33.5-46 9.5-7.5h15l9.5 7.5-5 15-9.5 7.5h-15l-5-15zm67 0 5-15 9.5-7.5h15l5 15-9.5 7.5h-15zm-52 37 7.5-12h16.5l7.5 12-12 7.5H67zm36.5 0 12-7.5h16.5l7.5 12-12 7.5H91z"
+  />
+  <path
+    fill="none"
+    stroke="#1e293b"
+    stroke-width="3"
+    d="M90 44v23M90 113v23M56.5 90h23M100.5 90h23M65 65l16 16M99 99l16 16M115 65l-16 16M81 99l-16 16"
+  />
+</svg>

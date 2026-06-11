@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { LlmInsight } from "@/lib/alpha-types";
+import { envPositiveInt } from "@/lib/env";
 
 type CacheEntry = {
   at: number;
@@ -21,9 +22,7 @@ function cachePath(key: string): string {
 }
 
 function cacheTtlMs(): number {
-  const raw = process.env.LLM_CACHE_TTL_MS?.trim();
-  const n = raw ? Number(raw) : 6 * 60 * 60 * 1000;
-  return Number.isFinite(n) && n > 0 ? n : 6 * 60 * 60 * 1000;
+  return envPositiveInt("LLM_CACHE_TTL_MS", 6 * 60 * 60 * 1000);
 }
 
 export function llmCacheKey(model: string, prompt: string): string {

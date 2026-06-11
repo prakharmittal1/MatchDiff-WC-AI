@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   filterFixturesByGroup,
   fixtureGroup,
+  groupLetter,
   listFixtureGroups,
 } from "@/lib/fixture-groups";
 import type { Fixture } from "@/lib/fixtures";
@@ -22,6 +23,7 @@ describe("fixtureGroup", () => {
   it("parses group from competition string", () => {
     expect(fixtureGroup("FIFA World Cup · Group A")).toBe("Group A");
     expect(fixtureGroup("FIFA World Cup · Group L")).toBe("Group L");
+    expect(groupLetter("Group C")).toBe("C");
   });
 
   it("filters fixtures by group", () => {

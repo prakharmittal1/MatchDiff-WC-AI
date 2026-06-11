@@ -117,7 +117,7 @@ export function MatchAnalysisModal({
 
     try {
       await navigator.clipboard.writeText(shareUrl);
-      setShareLabel("Link copied");
+      setShareLabel("Copied!");
     } catch {
       setShareLabel("Could not copy link");
     }
@@ -127,7 +127,7 @@ export function MatchAnalysisModal({
 
   return createPortal(
     <div
-      className="match-modal-root match-modal-root--open fixed inset-0 z-50 flex items-end justify-center px-5 py-3 sm:items-center sm:px-6 sm:py-5"
+      className="match-modal-root match-modal-root--open fixed inset-0 z-50 flex items-end justify-center px-0 py-0 sm:items-center sm:px-6 sm:py-5"
       role="presentation"
     >
       <button
@@ -144,59 +144,86 @@ export function MatchAnalysisModal({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="match-modal-panel match-modal-panel--open light-surface light-card relative flex h-[var(--match-modal-height)] max-h-[var(--match-modal-height)] w-full max-w-[var(--match-modal-width)] flex-col overflow-hidden rounded-xl"
+        className="match-modal-panel match-modal-panel--open light-surface light-card relative z-10 flex h-[var(--match-modal-height)] max-h-[var(--match-modal-height)] w-full max-w-[var(--match-modal-width)] flex-col overflow-hidden rounded-t-2xl sm:rounded-xl"
       >
-        <header className="match-modal-tile-header relative flex min-h-[5.5rem] shrink-0 items-center justify-center px-4 py-4">
-          <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-1.5">
-            {shareUrl && (
-              <button
-                type="button"
-                onClick={() => void handleShare()}
-                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition-colors hover:border-emerald-300 hover:text-emerald-800"
-                aria-label="Share this match analysis"
-              >
-                <ShareIcon />
-                {shareLabel ?? "Share"}
-              </button>
-            )}
+        <div
+          className="absolute inset-x-0 top-2 z-10 flex justify-center sm:hidden"
+          aria-hidden
+        >
+          <span className="h-1 w-10 rounded-full bg-amber-600/25" />
+        </div>
+
+        <header className="match-modal-tile-header relative flex shrink-0 items-center gap-1.5 px-4 pb-3 pt-[calc(1.5rem+2px)] sm:justify-center sm:px-5 sm:pb-3.5 sm:pt-[calc(1.25rem+2px)]">
+          {shareUrl && (
             <button
               type="button"
-              onClick={onClose}
-              className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
-              aria-label="Close match analysis"
+              onClick={() => void handleShare()}
+              className={[
+                "inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-xl transition-all focus:outline-none focus-visible:ring-2 sm:hidden",
+                "border-0 bg-transparent text-amber-950 shadow-none hover:text-amber-950 focus-visible:ring-amber-700/35",
+                shareLabel ? "text-emerald-800" : "",
+              ].join(" ")}
+              aria-label={shareLabel ?? "Share this match analysis"}
             >
-              <CloseIcon />
+              <ShareIcon />
             </button>
-          </div>
-
+          )}
           <p
             id={titleId}
-            className="flex max-w-full flex-nowrap items-center justify-center gap-2 overflow-hidden px-16 text-center"
+            className="flex min-w-0 flex-1 flex-nowrap items-center justify-center gap-1.5 overflow-hidden text-center sm:flex-none sm:max-w-full sm:gap-2 sm:px-24"
           >
             <TeamName
               name={fixture.home}
               showFlag
               showRank
               rankSpacing="compact"
-              nameClassName="text-lg font-semibold leading-tight text-slate-900"
-              rankClassName="text-xs font-semibold tabular-nums text-slate-400"
-              className="inline-flex min-w-0 items-center gap-2"
+              nameClassName="text-sm font-semibold leading-tight text-slate-900 sm:text-xl"
+              rankClassName="text-[10px] font-semibold tabular-nums text-slate-400 sm:text-sm"
+              flagClassName="inline-flex h-5 w-7 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-100 text-base leading-none ring-1 ring-slate-200 sm:h-7 sm:w-9 sm:text-xl"
+              className="inline-flex min-w-0 items-center gap-1 sm:gap-2"
             />
-            <span className="shrink-0 text-base font-semibold text-slate-400">vs</span>
+            <span className="shrink-0 text-xs font-semibold text-slate-400 sm:text-lg">vs</span>
             <TeamName
               name={fixture.away}
               showFlag
               showRank
               rankSpacing="compact"
-              nameClassName="text-lg font-semibold leading-tight text-slate-900"
-              rankClassName="text-xs font-semibold tabular-nums text-slate-400"
-              className="inline-flex min-w-0 items-center gap-2"
+              nameClassName="text-sm font-semibold leading-tight text-slate-900 sm:text-xl"
+              rankClassName="text-[10px] font-semibold tabular-nums text-slate-400 sm:text-sm"
+              flagClassName="inline-flex h-5 w-7 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-100 text-base leading-none ring-1 ring-slate-200 sm:h-7 sm:w-9 sm:text-xl"
+              className="inline-flex min-w-0 items-center gap-1 sm:gap-2"
             />
           </p>
+          <div className="flex shrink-0 items-center gap-1.5 sm:absolute sm:right-5 sm:top-1/2 sm:-translate-y-1/2 sm:gap-3">
+            {shareUrl && (
+              <button
+                type="button"
+                onClick={() => void handleShare()}
+                className={[
+                  "hidden size-11 shrink-0 cursor-pointer items-center justify-center rounded-xl transition-all focus:outline-none focus-visible:ring-2 sm:inline-flex",
+                  "border border-amber-200/90 bg-white/80 text-amber-950 shadow-sm hover:border-amber-300/80 hover:bg-amber-50/90 hover:text-amber-950 hover:shadow focus-visible:ring-amber-600/30",
+                  shareLabel ? "border-emerald-800/30 bg-emerald-100 text-emerald-950" : "",
+                ].join(" ")}
+                aria-label={shareLabel ?? "Share this match analysis"}
+              >
+                <ShareIcon />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border-0 bg-transparent text-amber-900 shadow-none transition-all hover:text-amber-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-600/30 sm:border sm:border-amber-200/90 sm:bg-white/80 sm:text-amber-950 sm:shadow-sm sm:hover:border-amber-300/80 sm:hover:bg-amber-50/90 sm:hover:text-amber-950 sm:hover:shadow"
+              aria-label="Close match analysis"
+            >
+              <CloseIcon />
+            </button>
+          </div>
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white px-4 pb-0 pt-0.5">
-          {children}
+        <div className="match-modal-scroll-wrap min-h-0 flex-1">
+          <div className="match-modal-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-3 sm:px-6 sm:pb-7 sm:pt-4">
+            {children}
+          </div>
         </div>
       </div>
     </div>,
@@ -206,7 +233,7 @@ export function MatchAnalysisModal({
 
 function ShareIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden className="shrink-0">
       <path
         d="M4 12v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8M16 6l-4-4-4 4M12 2v13"
         stroke="currentColor"
@@ -220,7 +247,7 @@ function ShareIcon() {
 
 function CloseIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden className="shrink-0">
       <path
         d="M6 6l12 12M18 6L6 18"
         stroke="currentColor"

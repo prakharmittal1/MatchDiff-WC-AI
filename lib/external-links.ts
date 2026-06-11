@@ -5,9 +5,6 @@ export const FIFA_WC_2026_FIXTURES_URL =
 export const POLYMARKET_WC_GAMES_URL =
   "https://polymarket.com/sports/fifa-world-cup/games";
 
-export const POLYMARKET_WC_PROPS_URL =
-  "https://polymarket.com/sports/fifa-world-cup/props";
-
 /** This match on Polymarket, or the WC games hub if slug is missing. */
 export function polymarketMatchUrl(eventSlug: string | null | undefined): string {
   const slug = eventSlug?.trim();

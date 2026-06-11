@@ -11,6 +11,8 @@ type Props = {
   nameClassName?: string;
   /** Tailwind classes on the FIFA rank badge. */
   rankClassName?: string;
+  /** Tailwind classes on the flag badge. */
+  flagClassName?: string;
   className?: string;
 };
 
@@ -26,17 +28,22 @@ export function TeamName({
   rankSpacing = "compact",
   nameClassName = "",
   rankClassName = "text-[10px] font-semibold tabular-nums text-slate-400",
-  className = "inline-flex min-w-0 items-baseline gap-0",
+  flagClassName = "inline-flex h-5 w-7 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-100 text-base leading-none ring-1 ring-slate-200",
+  className = "",
 }: Props) {
   const rank = showRank ? fifaRankFor(name) : null;
 
   return (
-    <span className={className}>
+    <span
+      className={[
+        "inline-flex min-w-0 flex-nowrap items-center gap-1.5",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       {showFlag && (
-        <span
-          aria-hidden
-          className="flex h-5 w-7 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-100 text-base leading-none ring-1 ring-slate-200"
-        >
+        <span aria-hidden className={flagClassName}>
           {flagFor(name)}
         </span>
       )}

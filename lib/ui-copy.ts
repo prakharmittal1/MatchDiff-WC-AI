@@ -1,6 +1,6 @@
 import type { InjuryStatus, SentimentTone } from "@/lib/sentiment/types";
 
-const NA = "—";
+const NA = "n/a";
 
 /** Strip internal rating jargon from user-facing strings. */
 export function plainEnglish(text: string): string {
@@ -37,33 +37,26 @@ export function marketVerdictLine(
 ): string {
   switch (kind) {
     case "underpriced":
-      return `Our win estimate for ${team} is higher than the market`;
+      return `${team} looks undervalued compared with the market`;
     case "overpriced":
-      return `Our win estimate for ${team} is lower than the market`;
+      return `The market may be too high on ${team}`;
     case "aligned":
-      return `Our estimate matches the market on ${team}`;
+      return `We're broadly aligned with the market on ${team}`;
     case "no_market":
-      return "No betting odds yet";
+      return "No live odds to compare yet";
   }
 }
 
 /** UI-only labels; API model IDs stay unchanged. */
-const LLM_MODEL_DISPLAY_ALIASES: Record<string, string> = {
-  "groq:llama-3.1-8b-instant": "llama-3.8",
-};
-
 export function formatLlmModelDisplay(model: string): string {
-  const aliased = LLM_MODEL_DISPLAY_ALIASES[model];
-  if (aliased) return aliased;
-
   if (model.startsWith("ollama:")) {
-    return `Ollama ${model.slice("ollama:".length)}`;
+    return model.slice("ollama:".length);
   }
   if (model.startsWith("gemini:")) {
-    return `Gemini ${model.slice("gemini:".length)}`;
+    return model.slice("gemini:".length);
   }
   if (model.startsWith("groq:")) {
-    return `Groq ${model.slice("groq:".length)}`;
+    return model.slice("groq:".length);
   }
   return model;
 }
@@ -125,18 +118,4 @@ export function injuryStatusLabel(status: InjuryStatus): string {
     default:
       return "Injury concern";
   }
-}
-
-export function friendlyLlmSkip(skipReason?: string): string | null {
-  if (!skipReason) return null;
-  if (skipReason === "no_api_key") {
-    return "AI match read isn't turned on — we're showing stats-only picks for now.";
-  }
-  if (skipReason === "disabled") {
-    return "AI match read was skipped for this request.";
-  }
-  if (skipReason.startsWith("error:")) {
-    return "AI match read couldn't run — showing stats-only picks instead.";
-  }
-  return null;
 }

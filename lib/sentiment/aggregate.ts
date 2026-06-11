@@ -1,3 +1,4 @@
+import { isIncompleteInjuryFragment } from "@/lib/sentiment/injury-text";
 import { searchTermsForTeam } from "@/lib/sentiment/query";
 import type {
   InjuryReport,
@@ -91,6 +92,7 @@ function pickQuotes(items: RawSentimentItem[], limit = 3): SentimentQuote[] {
   for (const item of sorted) {
     const text = (item.title ?? item.text).trim();
     if (text.length < 16) continue;
+    if (isIncompleteInjuryFragment(text)) continue;
     quotes.push({
       text: text.slice(0, 220),
       source: item.source,
@@ -141,7 +143,7 @@ function buildSummaryLine(
 
   if (quality === "weak") {
     parts.push(
-      `${items.length} fixture-related headline${items.length === 1 ? "" : "s"} — mostly TV schedules and logistics, not match analysis.`,
+      `${items.length} fixture-related headline${items.length === 1 ? "" : "s"}, mostly TV schedules and logistics, not match analysis.`,
     );
   } else {
     parts.push(`${items.length} preview headline${items.length === 1 ? "" : "s"} for this match.`);
@@ -158,11 +160,7 @@ function buildSummaryLine(
   return parts.join(" ");
 }
 
-function themesWithInjuries(
-  items: RawSentimentItem[],
-  hasOpinionSignal: boolean,
-  _injuryReports: InjuryReport[],
-): string[] {
+function themesFromItems(items: RawSentimentItem[], hasOpinionSignal: boolean): string[] {
   return detectThemes(items, hasOpinionSignal).slice(0, 4);
 }
 
@@ -178,7 +176,7 @@ export function buildSentimentSnapshot(
   const away_tone = toneForTeam(items, away, home);
   const coverage_quality = assessCoverageQuality(items, home_tone, away_tone, injury_reports);
   const hasOpinionSignal = coverage_quality === "strong";
-  const themes = themesWithInjuries(items, hasOpinionSignal, injury_reports);
+  const themes = themesFromItems(items, hasOpinionSignal);
   const sample_quotes = pickQuotes(items);
 
   return {

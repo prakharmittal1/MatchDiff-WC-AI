@@ -82,33 +82,3 @@ export function polyPillStyle(probability: number, variant: OutcomeSide): OddsFi
     boxShadow: `0 3px 0 ${shadow}`,
   };
 }
-
-/** Softer cells in the breakdown panel. */
-export function outcomeOddsStyle(probability: number, variant: OutcomeSide): OddsFillStyle {
-  const t = oddsColorIntensity(probability);
-
-  if (variant === "draw") {
-    const gray = Math.round(lerp(250, 228, t));
-    return {
-      backgroundColor: `rgb(${gray} ${gray} ${gray + 2})`,
-      color: "#3f3f46",
-      borderColor: `rgb(${Math.round(lerp(228, 212, t))} ${Math.round(lerp(228, 212, t))} ${Math.round(lerp(231, 214, t))})`,
-    };
-  }
-
-  if (variant === "home") {
-    const backgroundColor = mixRgb([240, 253, 244], GREEN_BG_DARK, t);
-    return {
-      backgroundColor,
-      color: textOnIntensity(t * 0.85, GREEN_TEXT_DARK),
-      borderColor: mixRgb(GREEN_SHADOW_LIGHT, GREEN_SHADOW_DARK, t * 0.9),
-    };
-  }
-
-  const backgroundColor = mixRgb([254, 242, 242], RED_BG_DARK, t);
-  return {
-    backgroundColor,
-    color: textOnIntensity(t * 0.85, RED_TEXT_DARK),
-    borderColor: mixRgb(RED_SHADOW_LIGHT, RED_SHADOW_DARK, t * 0.9),
-  };
-}

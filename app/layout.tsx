@@ -16,10 +16,15 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WC26 AI Match Analyst · USA · Canada · Mexico",
+  title: "MatchDiff · World Cup 2026",
   description:
-    "Multi-source RAG agent for World Cup 2026 — team ratings, match history, venue, news, and Polymarket odds synthesized by an LLM.",
-  applicationName: "WC26 AI Match Analyst",
+    "World Cup 2026 group stage: live Polymarket prices on match tiles and MatchDiff analysis vs the market.",
+  applicationName: "MatchDiff",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    shortcut: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-touch-icon.svg", type: "image/svg+xml" }],
+  },
   keywords: [
     "World Cup 2026",
     "FIFA",

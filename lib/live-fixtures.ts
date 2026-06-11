@@ -196,14 +196,14 @@ async function finishBootstrap(
     detail:
       detail ??
       (!hasPolymarket
-        ? "No Polymarket prices matched — odds placeholders on tiles."
+        ? "No Polymarket prices matched; odds placeholders on tiles."
         : undefined),
   };
 }
 
 export async function loadDashboardFixtures(): Promise<FixturesBootstrap> {
   const stubDetail =
-    "Using demo fixtures — Polymarket or football-data.org unavailable.";
+    "Using demo fixtures; Polymarket or football-data.org unavailable.";
 
   let polyGames: Awaited<ReturnType<typeof fetchPolymarketWcGames>> = [];
   let polyError: string | undefined;

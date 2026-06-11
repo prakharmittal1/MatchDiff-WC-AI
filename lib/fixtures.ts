@@ -183,7 +183,7 @@ export function resolveFixtureVenueTile(
   });
   if (city) return city;
 
-  return "—";
+  return "n/a";
 }
 
 /** Date line for match list tiles (e.g. "Wed, Jun 11"). */

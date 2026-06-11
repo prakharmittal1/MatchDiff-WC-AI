@@ -9,13 +9,11 @@
  *   data/evals/latest.json
  */
 
-import { createReadStream, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { createReadStream, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
 
 import { parse } from "csv-parse";
-
-import { readFileSync } from "node:fs";
 
 import { blendEloWithRag } from "@/lib/rag-form";
 import { searchPlaybookChunks } from "@/lib/rag-search";

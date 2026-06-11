@@ -2,55 +2,17 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { analyzeMatch } from "@/lib/alpha-engine";
+import { checkAnalyzeRateLimit } from "@/lib/rate-limit";
 import { canonicalizeTeam } from "@/lib/teams";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
-
-type RateEntry = {
-  count: number;
-  resetAt: number;
-};
-
-const rateMap = new Map<string, RateEntry>();
-
-function rateWindowMs(): number {
-  const raw = process.env.ANALYZE_RATE_LIMIT_WINDOW_MS?.trim();
-  const n = raw ? Number(raw) : 60_000;
-  return Number.isFinite(n) && n > 0 ? n : 60_000;
-}
-
-function rateMax(): number {
-  const raw = process.env.ANALYZE_RATE_LIMIT_MAX?.trim();
-  const n = raw ? Number(raw) : 20;
-  return Number.isFinite(n) && n > 0 ? n : 20;
-}
 
 function clientIp(req: Request): string {
   const forwarded = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
   const real = req.headers.get("x-real-ip")?.trim();
   const cf = req.headers.get("cf-connecting-ip")?.trim();
   return forwarded || real || cf || "unknown";
-}
-
-function checkRateLimit(ip: string): { ok: true; remaining: number } | { ok: false; retryAfterSec: number } {
-  const now = Date.now();
-  const windowMs = rateWindowMs();
-  const max = rateMax();
-  const prev = rateMap.get(ip);
-
-  if (!prev || prev.resetAt <= now) {
-    rateMap.set(ip, { count: 1, resetAt: now + windowMs });
-    return { ok: true, remaining: max - 1 };
-  }
-
-  if (prev.count >= max) {
-    return { ok: false, retryAfterSec: Math.max(1, Math.ceil((prev.resetAt - now) / 1000)) };
-  }
-
-  prev.count += 1;
-  rateMap.set(ip, prev);
-  return { ok: true, remaining: max - prev.count };
 }
 
 const BodySchema = z.object({
@@ -71,10 +33,8 @@ const BodySchema = z.object({
   refresh_sentiment: z.boolean().optional(),
 });
 
-/** POST /api/analyze — Elo + RAG + sentiment + LLM vs Polymarket */
 export async function POST(req: Request) {
-  const ip = clientIp(req);
-  const rate = checkRateLimit(ip);
+  const rate = checkAnalyzeRateLimit(clientIp(req));
   if (!rate.ok) {
     return NextResponse.json(
       {
@@ -83,9 +43,7 @@ export async function POST(req: Request) {
       },
       {
         status: 429,
-        headers: {
-          "Retry-After": String(rate.retryAfterSec),
-        },
+        headers: { "Retry-After": String(rate.retryAfterSec) },
       },
     );
   }
@@ -100,7 +58,10 @@ export async function POST(req: Request) {
   const parsed = BodySchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Invalid body", details: parsed.error.flatten() },
+      {
+        error: "Invalid body",
+        ...(process.env.NODE_ENV === "production" ? {} : { details: parsed.error.flatten() }),
+      },
       { status: 400 },
     );
   }
@@ -144,9 +105,7 @@ export async function POST(req: Request) {
       },
     );
     return NextResponse.json(result, {
-      headers: {
-        "X-RateLimit-Remaining": String(rate.remaining),
-      },
+      headers: { "X-RateLimit-Remaining": String(rate.remaining) },
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Analysis failed.";

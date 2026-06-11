@@ -7,7 +7,7 @@ export function BrandMark() {
         viewBox="0 0 64 64"
         width={52}
         height={52}
-        aria-label="World Cup 2026 mark"
+        aria-label="MatchDiff"
         role="img"
         className="shrink-0"
       >
@@ -40,15 +40,15 @@ export function BrandMark() {
           FIFA World Cup
         </span>
         <span className="text-lg font-semibold tracking-tight text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)] sm:text-xl">
-          Betting Advisor
+          MatchDiff
         </span>
-        <span className="mt-0.5 flex items-center gap-1 font-mono text-[10px] text-slate-300">
-          {HOST_NATIONS.map((h) => (
-            <span key={h.tag} className="flex items-center gap-0.5">
+        <span className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-300">
+          {HOST_NATIONS.map((team) => (
+            <span key={team} className="flex items-center gap-1.5">
               <span aria-hidden className="text-sm leading-none">
-                {flagFor(h.team)}
+                {flagFor(team)}
               </span>
-              <span>{h.tag}</span>
+              <span>{team}</span>
             </span>
           ))}
         </span>

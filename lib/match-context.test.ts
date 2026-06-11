@@ -76,6 +76,21 @@ describe("resolveMatchContext", () => {
     }
   });
 
+  it("strips city prefix from venue detail headline", () => {
+    const ctx = resolveMatchContext({
+      home: "South Korea",
+      away: "Czechia",
+      kickoff_iso: "2026-06-12T19:00:00Z",
+      venue: "Guadalajara",
+      competition: "FIFA World Cup",
+    });
+    expect(ctx.city).toBe("Guadalajara");
+    expect(formatMatchVenueDisplay(ctx)).toEqual({
+      title: "Guadalajara",
+      detail: "some altitude",
+    });
+  });
+
   it("includes heat and travel environment notes for Miami", () => {
     const ctx = resolveMatchContext({
       home: "United States",

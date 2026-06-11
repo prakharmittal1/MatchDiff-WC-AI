@@ -107,8 +107,8 @@ export function flagFor(team: Wc2026Team | string): string {
 }
 
 /** Host nations of WC 2026, ordered USA -> Canada -> Mexico. */
-export const HOST_NATIONS: readonly { team: Wc2026Team; tag: string }[] = [
-  { team: "United States", tag: "USA" },
-  { team: "Canada", tag: "CAN" },
-  { team: "Mexico", tag: "MEX" },
+export const HOST_NATIONS: readonly Wc2026Team[] = [
+  "United States",
+  "Canada",
+  "Mexico",
 ];

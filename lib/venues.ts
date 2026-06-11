@@ -21,7 +21,7 @@ const PROFILES: Record<string, VenueProfile> = {
     altitude_band: "high",
     climate: "Mild days, cool nights; thin air at altitude",
     notes: [
-      "High altitude (~2,240 m) — extra stamina demand, ball travels faster.",
+      "High altitude (~2,240 m); extra stamina demand, ball travels faster.",
       "Teams acclimated in central Mexico or the Andes often adapt better.",
       "European or sea-level squads may fade late without acclimatization.",
     ],
@@ -33,7 +33,7 @@ const PROFILES: Record<string, VenueProfile> = {
     altitude_band: "moderate",
     climate: "Warm, relatively dry",
     notes: [
-      "Moderate altitude (~1,560 m) — lighter than Mexico City but still a factor.",
+      "Moderate altitude (~1,560 m); lighter than Mexico City but still a factor.",
     ],
   },
   monterrey: {
@@ -58,7 +58,7 @@ const PROFILES: Record<string, VenueProfile> = {
     elevation_m: 5,
     altitude_band: "sea_level",
     climate: "Mild, rainy",
-    notes: ["Sea-level Pacific coast — long travel from Europe or South America."],
+    notes: ["Sea-level Pacific coast; long travel from Europe or South America."],
   },
   "new york": {
     city: "New York / New Jersey",
@@ -90,7 +90,7 @@ const PROFILES: Record<string, VenueProfile> = {
     elevation_m: 130,
     altitude_band: "sea_level",
     climate: "Hot",
-    notes: ["Often very hot — stamina and hydration matter in summer kickoffs."],
+    notes: ["Often very hot; stamina and hydration matter in summer kickoffs."],
   },
   houston: {
     city: "Houston",
@@ -114,7 +114,7 @@ const PROFILES: Record<string, VenueProfile> = {
     elevation_m: 55,
     altitude_band: "sea_level",
     climate: "Mild, cooler",
-    notes: ["Cooler than southern US hosts — different from Gulf heat."],
+    notes: ["Cooler than southern US hosts; different from Gulf heat."],
   },
   denver: {
     city: "Denver",
@@ -123,7 +123,7 @@ const PROFILES: Record<string, VenueProfile> = {
     altitude_band: "high",
     climate: "Dry, sunny",
     notes: [
-      "High altitude (~1,600 m) if used — similar concerns to Mexico City, slightly lower.",
+      "High altitude (~1,600 m) if used; similar concerns to Mexico City, slightly lower.",
     ],
   },
   kansas: {
@@ -131,8 +131,8 @@ const PROFILES: Record<string, VenueProfile> = {
     country: "United States",
     elevation_m: 270,
     altitude_band: "sea_level",
-    climate: "Continental — hot summers",
-    notes: ["Central US — mid-continent travel from coasts."],
+    climate: "Continental; hot summers",
+    notes: ["Central US; mid-continent travel from coasts."],
   },
   philadelphia: {
     city: "Philadelphia",
@@ -156,7 +156,7 @@ const PROFILES: Record<string, VenueProfile> = {
     elevation_m: 15,
     altitude_band: "sea_level",
     climate: "Cool, windy",
-    notes: ["Cooler microclimate — can suit technical teams."],
+    notes: ["Cooler microclimate; can suit technical teams."],
   },
 };
 
@@ -186,9 +186,6 @@ export function normalizeVenueKey(raw: string): string {
     .trim();
 }
 
-/** All FIFA WC 2026 host-city profiles (stable tile / fallback assignment). */
-export const WC26_HOST_CITY_KEYS = Object.keys(PROFILES);
-
 const MEXICO_HOST_KEYS = ["mexico city", "guadalajara", "monterrey"] as const;
 const CANADA_HOST_KEYS = ["toronto", "vancouver"] as const;
 const USA_HOST_KEYS = [
@@ -217,16 +214,6 @@ function hashSeed(seed: string): number {
 function pickFromKeys(seed: string, keys: readonly string[]): VenueProfile {
   const key = keys[hashSeed(seed) % keys.length]!;
   return PROFILES[key]!;
-}
-
-/** Deterministic host city when API venue is missing (WC group/knockout). */
-export function pickWcHostCityProfile(
-  home: string,
-  away: string,
-  kickoff_iso: string,
-): VenueProfile {
-  const seed = `${home}|${away}|${kickoff_iso.slice(0, 10)}`;
-  return pickFromKeys(seed, WC26_HOST_CITY_KEYS);
 }
 
 export function pickHostNationCityProfile(

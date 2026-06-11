@@ -2,14 +2,20 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { fetchGoogleNewsRss } from "@/lib/sentiment/google-news-rss";
+import {
+  classifyInjuryStatus,
+  isInjuryHeadline,
+} from "@/lib/sentiment/injury-text";
 import { injuryFixtureQuery, injuryTeamQuery, searchTermsForTeam } from "@/lib/sentiment/query";
 import { isSoccerOrFootballNews } from "@/lib/sentiment/soccer-filter";
 import type { InjuryReport, InjuryStatus } from "@/lib/sentiment/types";
 import { canonicalizeTeam, type Wc2026Team } from "@/lib/teams";
 
-const RULED_OUT = /\b(ruled out|will miss|won't play|will not play|out of (the )?tournament)\b/i;
-const DOUBTFUL = /\b(doubtful|doubt|sidelined|fitness concern|set to miss|scan|late fitness)\b/i;
-const INJURY_HINT = /\b(injur|injured|hamstring|knee|ankle|muscle|strain|fracture|surgery)\b/i;
+export {
+  classifyInjuryStatus,
+  isIncompleteInjuryFragment,
+  isInjuryHeadline,
+} from "@/lib/sentiment/injury-text";
 
 type CuratedFile = {
   entries?: Array<{
@@ -26,17 +32,6 @@ type CuratedFile = {
 function mentionsTeam(text: string, team: Wc2026Team): boolean {
   const lower = text.toLowerCase();
   return searchTermsForTeam(team).some((term) => lower.includes(term.toLowerCase()));
-}
-
-export function classifyInjuryStatus(text: string): InjuryStatus {
-  if (RULED_OUT.test(text)) return "ruled_out";
-  if (DOUBTFUL.test(text)) return "doubtful";
-  if (INJURY_HINT.test(text)) return "unknown";
-  return "unknown";
-}
-
-export function isInjuryHeadline(text: string): boolean {
-  return INJURY_HINT.test(text) || RULED_OUT.test(text) || DOUBTFUL.test(text);
 }
 
 function cleanPlayerName(name: string): string {

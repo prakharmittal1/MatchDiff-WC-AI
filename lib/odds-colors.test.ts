@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { outcomeOddsStyle, polyPillStyle } from "@/lib/odds-colors";
+import { polyPillStyle } from "@/lib/odds-colors";
 
 function parseRgb(color: string): [number, number, number] | null {
   const m = /rgb\((\d+)\s+(\d+)\s+(\d+)\)/.exec(color);
@@ -23,12 +23,5 @@ describe("odds-colors", () => {
     const low = parseRgb(polyPillStyle(0.55, "away").backgroundColor)!;
     const high = parseRgb(polyPillStyle(0.92, "away").backgroundColor)!;
     expect(luminance(high)).toBeLessThan(luminance(low));
-  });
-
-  it("keeps draw light as probability changes", () => {
-    const low = parseRgb(outcomeOddsStyle(0.2, "draw").backgroundColor)!;
-    const high = parseRgb(outcomeOddsStyle(0.8, "draw").backgroundColor)!;
-    expect(low[0]).toBeGreaterThan(240);
-    expect(high[0]).toBeLessThan(low[0]);
   });
 });

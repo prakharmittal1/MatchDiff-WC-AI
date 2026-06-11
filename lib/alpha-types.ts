@@ -107,10 +107,8 @@ export type AnalyzeResult = {
   data_gaps: string[];
   match_context: MatchContext;
   rag: RagContext;
-  summary: string;
   elo_built_at: string;
   llm: LlmInsight | null;
-  llm_skip_reason?: string;
   /** Plain-language overall mismatch vs Polymarket. */
   verdict: MismatchVerdict;
   /** News headlines about this fixture (when news APIs configured). */

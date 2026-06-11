@@ -46,7 +46,6 @@ function baseResult(overrides: Partial<AnalyzeResult> = {}): AnalyzeResult {
       source: "venue",
     },
     rag: { built_at: "2026-01-01", hits: [{ id: "1", content: "x", date: "2020", tournament: "t", score: 1 }] },
-    summary: "",
     elo_built_at: "2026-01-01",
     llm: null,
     sentiment: null,
@@ -68,8 +67,8 @@ describe("buildMismatchVerdict", () => {
     const v = buildMismatchVerdict(baseResult());
     expect(v.alignment).toBe("we_higher");
     expect(v.gap_pp).toBe(18);
-    expect(v.headline).toBe("Our win estimate for Mexico is higher than the market");
-    expect(v.factors_used.some((f) => /Past meetings/i.test(f))).toBe(true);
+    expect(v.headline).toBe("Mexico looks undervalued compared with the market");
+    expect(v.factors_used.some((f) => /Head-to-head/i.test(f))).toBe(true);
     expect(v.factors_used.some((f) => /^AI /i.test(f))).toBe(true);
   });
 

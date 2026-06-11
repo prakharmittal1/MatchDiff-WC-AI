@@ -8,7 +8,7 @@ import type { Wc2026Team } from "@/lib/teams";
 
 /** Tournament-wide stressors (shown in analysis when relevant). */
 export const WC26_TOURNAMENT_NOTES: readonly string[] = [
-  "Tournament spans Mexico, USA, and Canada (~4,000 km) — jet lag and inter-city travel are routine.",
+  "Tournament spans Mexico, USA, and Canada (~4,000 km); jet lag and inter-city travel are routine.",
   "Most host cities face hot or humid summer kickoffs; FIFA has mandated cooling breaks.",
   "Short turnarounds (often under 4 days) in later rounds add cumulative fatigue.",
 ];
@@ -16,7 +16,7 @@ export const WC26_TOURNAMENT_NOTES: readonly string[] = [
 export function heatHumidityNote(profile: VenueProfile): string | null {
   const c = profile.climate.toLowerCase();
   if (!/hot|humid|warm/.test(c)) return null;
-  return "Heat and humidity raise cardiac load — favor deeper squads, rotation, and hydration prep.";
+  return "Heat and humidity raise cardiac load; favor deeper squads, rotation, and hydration prep.";
 }
 
 export function altitudeNote(profile: VenueProfile): string | null {
@@ -32,10 +32,10 @@ export function altitudeNote(profile: VenueProfile): string | null {
 export function airQualityNote(profile: VenueProfile): string | null {
   const city = profile.city.toLowerCase();
   if (city.includes("los angeles")) {
-    return "Los Angeles can have elevated ozone/smog — a factor for players with asthma or allergies.";
+    return "Los Angeles can have elevated ozone/smog, a factor for players with asthma or allergies.";
   }
   if (profile.country === "Mexico" && profile.altitude_band !== "sea_level") {
-    return "Urban Mexico venues may have higher particulate matter — respiratory sensitivity matters.";
+    return "Urban Mexico venues may have higher particulate matter; respiratory sensitivity matters.";
   }
   return null;
 }
@@ -53,7 +53,7 @@ export function circadianTravelNote(
   if (!nonHost) return null;
 
   if (profile.country === "United States" || profile.country === "Mexico" || profile.country === "Canada") {
-    return `${nonHost} travel between host cities in the US, Mexico, and Canada — shorter hops than a typical overseas World Cup, but time zones still vary.`;
+    return `${nonHost} travel between host cities in the US, Mexico, and Canada; shorter hops than a typical overseas World Cup, but time zones still vary.`;
   }
 
   return null;
@@ -78,7 +78,7 @@ export function collectVenueEnvironmentNotes(
 
   if (options?.isWorldCup && profile.country === "United States") {
     notes.push(
-      "US host cities vary from cool Pacific (Seattle) to Gulf heat (Miami/Houston) — climate mismatch between games is common.",
+      "US host cities vary from cool Pacific (Seattle) to Gulf heat (Miami/Houston); climate mismatch between games is common.",
     );
   }
 

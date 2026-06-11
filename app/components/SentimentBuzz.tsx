@@ -30,29 +30,31 @@ export function SentimentBuzz({ sentiment, home, away }: Props) {
   const title = quality === "weak" ? "Recent headlines" : "Headline mood";
 
   return (
-    <section className="rounded-lg bg-violet-50/70 px-3 py-3 text-xs text-slate-600">
-      <p className="text-[10px] font-medium uppercase tracking-wide text-violet-700/60">
+    <section>
+      <p className="text-xs font-semibold text-slate-600">
         {title}
-        {sentiment.post_count > 0 && ` (${sentiment.post_count})`}
+        {sentiment.post_count > 0 && (
+          <span className="ml-1.5 font-normal text-slate-400">({sentiment.post_count})</span>
+        )}
       </p>
 
       {quality === "weak" && sentiment.post_count > 0 && (
-        <p className="mt-1.5 text-slate-500">
+        <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
           Pre-tournament news is often TV schedules and watch guides.
         </p>
       )}
 
       {showTone && (
-        <div className="mt-2 grid grid-cols-2 gap-3">
-          <div>
-            <p className="text-[10px] text-slate-400">{home}</p>
-            <p className={`font-medium ${toneClass(sentiment.home_tone)}`}>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <div className="rounded-lg border border-slate-100 bg-white/90 px-2.5 py-2">
+            <p className="text-[10px] font-medium text-slate-400">{home}</p>
+            <p className={`mt-0.5 text-sm font-semibold ${toneClass(sentiment.home_tone)}`}>
               {sentimentToneLabel(sentiment.home_tone)}
             </p>
           </div>
-          <div>
-            <p className="text-[10px] text-slate-400">{away}</p>
-            <p className={`font-medium ${toneClass(sentiment.away_tone)}`}>
+          <div className="rounded-lg border border-slate-100 bg-white/90 px-2.5 py-2">
+            <p className="text-[10px] font-medium text-slate-400">{away}</p>
+            <p className={`mt-0.5 text-sm font-semibold ${toneClass(sentiment.away_tone)}`}>
               {sentimentToneLabel(sentiment.away_tone)}
             </p>
           </div>
@@ -60,32 +62,34 @@ export function SentimentBuzz({ sentiment, home, away }: Props) {
       )}
 
       {sentiment.themes.filter((theme) => theme !== "Injuries & fitness").length > 0 && (
-        <p className="mt-2 text-[10px] text-violet-700/55">
+        <p className="mt-2.5 text-[11px] text-slate-500">
           {sentiment.themes.filter((theme) => theme !== "Injuries & fitness").join(" · ")}
         </p>
       )}
 
       {sentiment.sample_quotes.length > 0 && (
-        <ul className="mt-2 divide-y divide-violet-100/90">
+        <ul className="mt-2.5 space-y-2">
           {sentiment.sample_quotes.map((q, i) => (
-            <li key={i} className="py-2 leading-snug first:pt-0 last:pb-0">
+            <li
+              key={i}
+              className="rounded-xl border border-slate-100 bg-white/90 p-3 text-sm leading-snug shadow-sm shadow-slate-900/[0.03]"
+            >
               {q.url ? (
                 <a
                   href={q.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-700 underline decoration-violet-200 underline-offset-2 hover:text-slate-900"
+                  className="text-slate-700 underline decoration-slate-300 underline-offset-2 transition-colors hover:text-slate-900 hover:decoration-slate-400"
                 >
                   {q.text}
                 </a>
               ) : (
-                q.text
+                <span className="text-slate-700">{q.text}</span>
               )}
             </li>
           ))}
         </ul>
       )}
-
     </section>
   );
 }

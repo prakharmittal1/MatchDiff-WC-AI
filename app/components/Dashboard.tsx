@@ -1,12 +1,15 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import Link from "next/link";
 
 import { AnalysisPanel } from "@/app/components/AnalysisPanel";
 import { BrandMark } from "@/app/components/BrandMark";
 import { GroupFilter } from "@/app/components/GroupFilter";
 import { MatchAnalysisModal } from "@/app/components/MatchAnalysisModal";
 import { MatchGrid } from "@/app/components/MatchGrid";
+import { requestMatchAnalysis } from "@/lib/analyze-client";
 import { filterFixturesByGroup } from "@/lib/fixture-groups";
 import type { AnalyzeResult } from "@/lib/alpha-types";
 import { FIFA_WC_2026_FIXTURES_URL, POLYMARKET_WC_GAMES_URL } from "@/lib/external-links";
@@ -15,6 +18,7 @@ import { formatChance } from "@/lib/ui-copy";
 
 type Props = {
   fixtures: Fixture[];
+  initialMatchId?: string | null;
 };
 
 function buildShareUrl(fixtureId: string): string {
@@ -24,15 +28,23 @@ function buildShareUrl(fixtureId: string): string {
   return url.toString();
 }
 
-export function Dashboard({ fixtures }: Props) {
-  const [activeId, setActiveId] = useState<string | undefined>();
-  const [activeFixture, setActiveFixture] = useState<Fixture | null>(null);
+function findFixture(fixtures: Fixture[], id: string | null | undefined): Fixture | null {
+  if (!id) return null;
+  return fixtures.find((f) => f.id === id) ?? null;
+}
+
+export function Dashboard({ fixtures, initialMatchId = null }: Props) {
+  const deepLinkFixture = useMemo(
+    () => findFixture(fixtures, initialMatchId),
+    [fixtures, initialMatchId],
+  );
+
+  const [activeId, setActiveId] = useState<string | undefined>(deepLinkFixture?.id);
+  const [activeFixture, setActiveFixture] = useState<Fixture | null>(deepLinkFixture);
   const [originRect, setOriginRect] = useState<DOMRect | null>(null);
   const [selectedGroup, setSelectedGroup] = useState("all");
   const [result, setResult] = useState<AnalyzeResult | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [sentimentLoading, setSentimentLoading] = useState(false);
-  const [sentimentError, setSentimentError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(Boolean(deepLinkFixture));
   const [error, setError] = useState<string | null>(null);
 
   const filteredFixtures = useMemo(
@@ -48,87 +60,50 @@ export function Dashboard({ fixtures }: Props) {
     window.history.replaceState(null, "", url);
   }, []);
 
-  const requestAnalyze = useCallback(
-    async (
-      f: Fixture,
-      opts?: { includeSentiment?: boolean; includeLlm?: boolean; refreshSentiment?: boolean },
-    ): Promise<AnalyzeResult> => {
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          home: f.home,
-          away: f.away,
-          kickoff_iso: f.kickoff_iso,
-          competition: f.competition,
-          p_market:
-            f.market_price_source === "polymarket" ? f.market_home_win : undefined,
-          market_draw: f.market_draw ?? undefined,
-          market_away_win: f.market_away_win ?? undefined,
-          polymarket_event_slug:
-            f.polymarket_event_slug ?? f.polymarket_market_slug ?? undefined,
-          polymarket_market_slug: f.polymarket_market_slug,
-          venue: f.venue,
-          is_world_cup: f.is_world_cup ?? true,
-          include_sentiment: opts?.includeSentiment,
-          include_llm: opts?.includeLlm,
-          refresh_sentiment: opts?.refreshSentiment,
-        }),
-      });
-      const data = (await res.json()) as AnalyzeResult | { error?: string };
-      if (!res.ok) {
-        const msg =
-          typeof data === "object" && data && "error" in data
-            ? String(data.error)
-            : `Something went wrong (${res.status})`;
-        throw new Error(msg);
-      }
-      return data as AnalyzeResult;
-    },
-    [],
-  );
+  useEffect(() => {
+    if (!deepLinkFixture) return;
 
-  const onAnalyzeFixture = useCallback(
+    syncMatchParam(deepLinkFixture.id);
+    let cancelled = false;
+
+    requestMatchAnalysis(deepLinkFixture)
+      .then((data) => {
+        if (!cancelled) setResult(data);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Could not analyze this match");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [deepLinkFixture, syncMatchParam]);
+
+  const runAnalysis = useCallback(
     async (f: Fixture, rect?: DOMRect) => {
       setActiveId(f.id);
       setActiveFixture(f);
       setOriginRect(rect ?? null);
       setLoading(true);
       setError(null);
-      setSentimentError(null);
       setResult(null);
       syncMatchParam(f.id);
 
       try {
-        const base = await requestAnalyze(f, { includeSentiment: true });
-        setResult(base);
+        setResult(await requestMatchAnalysis(f));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Could not analyze this match");
       } finally {
         setLoading(false);
       }
     },
-    [requestAnalyze, syncMatchParam],
+    [syncMatchParam],
   );
-
-  const onRefreshNews = useCallback(async () => {
-    if (!activeFixture || sentimentLoading || loading) return;
-    setSentimentError(null);
-    setSentimentLoading(true);
-    try {
-      const refreshed = await requestAnalyze(activeFixture, {
-        includeSentiment: true,
-        refreshSentiment: true,
-      });
-      setResult(refreshed);
-    } catch (err) {
-      setSentimentError(
-        err instanceof Error ? err.message : "Could not refresh news and pick",
-      );
-    } finally {
-      setSentimentLoading(false);
-    }
-  }, [activeFixture, loading, requestAnalyze, sentimentLoading]);
 
   const onCloseModal = useCallback(() => {
     setActiveId(undefined);
@@ -136,14 +111,13 @@ export function Dashboard({ fixtures }: Props) {
     setOriginRect(null);
     setResult(null);
     setError(null);
-    setSentimentError(null);
     syncMatchParam(undefined);
   }, [syncMatchParam]);
 
   const shareUrl = activeFixture ? buildShareUrl(activeFixture.id) : null;
   const shareText =
     activeFixture && result
-      ? `${activeFixture.home} vs ${activeFixture.away} — our pick ${formatChance(result.p_expected)}${
+      ? `${activeFixture.home} vs ${activeFixture.away}, MatchDiff ${formatChance(result.p_expected)}${
           result.p_market != null ? ` vs market ${formatChance(result.p_market)}` : ""
         }`
       : activeFixture
@@ -152,13 +126,19 @@ export function Dashboard({ fixtures }: Props) {
 
   return (
     <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-5 py-8 sm:px-6">
+      <Link
+        href="/faq"
+        className="fixed right-5 top-5 z-40 rounded-lg border border-white/10 bg-black/45 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-emerald-300 shadow-lg shadow-black/20 backdrop-blur-sm transition-colors hover:border-emerald-400/40 hover:bg-black/55 hover:text-emerald-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 sm:right-6 sm:top-6"
+      >
+        FAQ
+      </Link>
+
       <div className="page-hero flex flex-col gap-5 p-5 sm:p-6">
         <header className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-          <BrandMark />
+          <Link href="/" className="w-fit rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40">
+            <BrandMark />
+          </Link>
           <div className="flex max-w-md flex-col gap-1 sm:items-end sm:text-right">
-            <span className="hero-kicker font-mono text-[10px] font-medium uppercase tracking-[0.22em]">
-              Group stage · 2026
-            </span>
             <h1 className="hero-title text-2xl font-semibold leading-tight tracking-tight sm:text-[1.65rem]">
               Beat the market{" "}
               <span className="brand-marquee">before it catches up</span>
@@ -166,31 +146,30 @@ export function Dashboard({ fixtures }: Props) {
           </div>
         </header>
 
-        <p className="hero-lede max-w-2xl text-sm leading-relaxed">
-          Tap a match to compare our win estimate with live betting odds. Schedule on{" "}
-          <a
-            href={FIFA_WC_2026_FIXTURES_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-emerald-300 underline decoration-emerald-300/45 underline-offset-2 hover:text-emerald-200 hover:decoration-emerald-200/70"
-          >
-            FIFA.com
-          </a>
-          .
-        </p>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+          <p className="hero-lede max-w-2xl text-sm leading-relaxed">
+            Tap a match to see our model&apos;s prediction vs live Polymarket odds.
+          </p>
+          <p className="shrink-0 text-sm leading-relaxed sm:text-right">
+            Schedule on{" "}
+            <a
+              href={FIFA_WC_2026_FIXTURES_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-emerald-300 underline decoration-emerald-300/45 underline-offset-2 hover:text-emerald-200 hover:decoration-emerald-200/70"
+            >
+              FIFA.com
+            </a>
+          </p>
+        </div>
       </div>
 
       <section>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-baseline gap-3">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]">
-              <span aria-hidden className="inline-block size-2 rounded-full bg-emerald-400" />
-              Group stage
-            </h2>
-            <span className="font-mono text-[10px] text-slate-300 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)]">
-              {filteredFixtures.length} of {fixtures.length} matches
-            </span>
-          </div>
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]">
+            <span aria-hidden className="inline-block size-2 rounded-full bg-emerald-400" />
+            Group stage
+          </h2>
           <GroupFilter
             fixtures={fixtures}
             value={selectedGroup}
@@ -201,7 +180,7 @@ export function Dashboard({ fixtures }: Props) {
         <MatchGrid
           key={selectedGroup}
           fixtures={filteredFixtures}
-          onAnalyze={onAnalyzeFixture}
+          onAnalyze={runAnalysis}
           activeId={activeId}
         />
       </section>
@@ -214,33 +193,37 @@ export function Dashboard({ fixtures }: Props) {
         shareUrl={shareUrl}
         shareText={shareText}
       >
-        <AnalysisPanel
-          embedded
-          result={result}
-          loading={loading}
-          sentimentLoading={sentimentLoading}
-          sentimentError={sentimentError}
-          onRefreshNews={onRefreshNews}
-          error={error}
-        />
+        <AnalysisPanel result={result} loading={loading} error={error} />
       </MatchAnalysisModal>
 
-      <footer className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] text-slate-500">
-        <span className="flex items-center gap-1">
-          <span aria-hidden className="inline-block size-1.5 rounded-full bg-emerald-600/70" />
-          Team stats · news · AI read
-        </span>
-        <span aria-hidden>·</span>
-        <a
-          href={POLYMARKET_WC_GAMES_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-emerald-300/90 underline decoration-emerald-300/30 underline-offset-2 hover:text-emerald-200"
-        >
-          Polymarket odds
-        </a>
-        <span aria-hidden>·</span>
-        <span>Kickoff 11 Jun 2026</span>
+      <footer className="pt-2">
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-emerald-200/75 [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]">
+          <span>Team ratings · news · model</span>
+          <span aria-hidden className="text-emerald-200/40">
+            ·
+          </span>
+          <Link
+            href="/faq"
+            className="underline decoration-emerald-200/25 underline-offset-2 hover:text-emerald-100"
+          >
+            FAQ
+          </Link>
+          <span aria-hidden className="text-emerald-200/40">
+            ·
+          </span>
+          <a
+            href={POLYMARKET_WC_GAMES_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-emerald-200/25 underline-offset-2 hover:text-emerald-100"
+          >
+            Polymarket odds
+          </a>
+          <span aria-hidden className="text-emerald-200/40">
+            ·
+          </span>
+          <span>Kickoff 11 Jun 2026</span>
+        </div>
       </footer>
     </main>
   );

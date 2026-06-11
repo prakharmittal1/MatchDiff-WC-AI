@@ -102,7 +102,7 @@ function buildTravelNotes(
   if (profile?.altitude_band === "high") {
     if (SEA_LEVEL_FEDERATIONS.has(away) || away === "United States") {
       notes.push(
-        `${away} often play from sea-level conditions — altitude at ${profile.city} can be a disadvantage without prep.`,
+        `${away} often play from sea-level conditions; altitude at ${profile.city} can be a disadvantage without prep.`,
       );
     }
     if (home === "Mexico" || home === "Ecuador" || home === "Colombia" || home === "Bolivia") {
@@ -113,9 +113,9 @@ function buildTravelNotes(
     }
   }
 
-  if (profile?.country === "United States" && !HOSTS.has(away) && !HOSTS.has(home)) {
+  if (HOSTS.has(home) && HOSTS.has(away)) {
     notes.push(
-      `Both squads are based in the US/Mexico/Canada host region — travel is mostly between host cities, not long-haul intercontinental hops.`,
+      `Both squads are based in the US/Mexico/Canada host region; travel is mostly between host cities, not long-haul intercontinental hops.`,
     );
   }
 
@@ -145,7 +145,7 @@ function coHostPlayingAtHomeNote(
       (team === "United States" && profile.country === "United States") ||
       (team === "Canada" && profile.country === "Canada")
     ) {
-      return `${team} are a 2026 co-host playing in ${profile.city} — local support and familiar logistics, not a traditional home fixture.`;
+      return `${team} are a 2026 co-host playing in ${profile.city}; local support and familiar logistics, not a traditional home fixture.`;
     }
   }
   return null;
@@ -292,7 +292,13 @@ export function formatMatchVenueDisplay(ctx: MatchContext): {
     const redundant =
       headlineN === titleN ||
       (cityN != null && headlineN === cityN && titleN !== cityN);
-    if (!redundant) detail = headline;
+    if (!redundant) {
+      if (city && headline.startsWith(`${city} · `)) {
+        detail = headline.slice(city.length + 3);
+      } else {
+        detail = headline;
+      }
+    }
   } else if (headline && !title) {
     detail = headline;
   }

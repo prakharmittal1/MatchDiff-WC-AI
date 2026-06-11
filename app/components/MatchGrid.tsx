@@ -44,13 +44,6 @@ function useGridColumns(): number {
 export function MatchGrid({ fixtures, onAnalyze, activeId }: Props) {
   const cols = useGridColumns();
   const [visibleRows, setVisibleRows] = useState(INITIAL_ROWS);
-  const [prevCount, setPrevCount] = useState(fixtures.length);
-
-  // Reset pagination when the fixture set changes (recommended over an effect).
-  if (prevCount !== fixtures.length) {
-    setPrevCount(fixtures.length);
-    setVisibleRows(INITIAL_ROWS);
-  }
 
   const visibleCount = Math.min(fixtures.length, visibleRows * cols);
   const visibleFixtures = fixtures.slice(0, visibleCount);
@@ -131,7 +124,7 @@ export function MatchGrid({ fixtures, onAnalyze, activeId }: Props) {
 
       {showControls && (
         <div className="flex flex-col items-center gap-2 pt-1">
-          <p className="text-[10px] text-slate-400">
+          <p className="text-xs font-medium tabular-nums text-slate-300 [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]">
             Showing {visibleCount} of {fixtures.length} matches
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2">

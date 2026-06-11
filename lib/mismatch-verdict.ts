@@ -33,7 +33,7 @@ function buildFactorsUsed(result: Omit<AnalyzeResult, "verdict">): string[] {
   factors.push(`Ratings: ${formatPct(result.p_model)} for ${match.home}`);
 
   if (result.rag.hits.length > 0) {
-    factors.push(`Past meetings (${result.rag.hits.length})`);
+    factors.push(`Head-to-head (${result.rag.hits.length})`);
   }
 
   if (

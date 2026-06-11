@@ -15,6 +15,8 @@ import {
   isLlmAnalystConfigured,
   isOllamaReachable,
 } from "@/lib/llm-provider";
+import { log } from "@/lib/log";
+import { isIncompleteInjuryFragment } from "@/lib/sentiment/injury-text";
 
 const InsightSchema = z.object({
   p_expected_home_win: z
@@ -66,7 +68,7 @@ const InsightLooseSchema = z.object({
 
 export { isLlmAnalystConfigured };
 
-type QuantForLlm = Omit<AnalyzeResult, "summary" | "verdict" | "llm" | "llm_skip_reason">;
+type QuantForLlm = Omit<AnalyzeResult, "verdict" | "llm">;
 
 function buildPrompt(quant: QuantForLlm): string {
   return [
@@ -82,7 +84,7 @@ function buildPrompt(quant: QuantForLlm): string {
     "4. match_conditions — venue, altitude, heat/humidity, air quality, travel, jet lag; use ONLY facts listed there.",
     "4b. quant_adjustments — rest, recent form, squad value, injuries (already in p_model). Do NOT double-count; reference them in thinking_steps.",
     "5. news_sentiment — recent headlines + injury_reports (if null or empty, ignore).",
-    "   Weight injury_reports heavily vs Elo when adjusting p_expected; cite player/status in thinking_steps and risks.",
+    "   Weight injury_reports heavily vs Elo when adjusting p_expected; cite squad availability in thinking_steps and risks.",
     "   Do NOT invent headlines, players, or injury statuses not listed in news_sentiment.",
     "",
     "Rules:",
@@ -161,17 +163,29 @@ function plainLanguage(text: string): string {
   out = out.replace(/\bhistorical[_ ]context\b/gi, "past meetings");
   out = out.replace(/\bElo(?:[ -]?points?| ratings?| score)?\b/gi, "team ratings");
   out = out.replace(/\bRAG\b/g, "past meetings");
-  // 0.88 / .88 / =0.8838 → "about 88%". Avoid touching years / whole numbers.
   out = out.replace(/(?:=\s*)?\b0?\.(\d{1,4})\b/g, (_m, frac: string) => {
     const pct = Math.round(Number(`0.${frac}`) * 100);
     return `about ${pct}%`;
   });
-  // Collapse leftover artifacts like "our model , nudging" or double spaces.
   return out.replace(/\s+,/g, ",").replace(/\s{2,}/g, " ").trim();
 }
 
+function plainSentence(text: string): string | null {
+  const cleaned = plainLanguage(text.trim());
+  if (!cleaned || isIncompleteInjuryFragment(cleaned)) return null;
+  return cleaned;
+}
+
 function plainList(items: string[]): string[] {
-  return items.map((s) => plainLanguage(s.trim())).filter(Boolean);
+  return items.map((s) => plainSentence(s)).filter((s): s is string => Boolean(s));
+}
+
+function plainSummary(text: string): string {
+  const sentences = text
+    .split(/(?<=[.!?])\s+/)
+    .map((s) => plainSentence(s))
+    .filter((s): s is string => Boolean(s));
+  return sentences.join(" ").trim();
 }
 
 function normalizeLooseInsight(
@@ -184,17 +198,16 @@ function normalizeLooseInsight(
 
   const thinking = plainList(raw.thinking_steps ?? []).slice(0, 6);
 
-  let summary = plainLanguage((raw.summary ?? "").trim());
+  let summary = plainSummary((raw.summary ?? "").trim());
   if (!summary) {
-    // Synthesize a readable summary from whatever the model did give us.
     summary =
-      plainLanguage((raw.headline ?? "").trim()) ||
+      plainSentence((raw.headline ?? "").trim()) ||
       thinking.slice(0, 2).join(" ") ||
       "Our model leans on team ratings and past meetings here; treat it as a lean rather than a lock.";
   }
 
   const headline =
-    plainLanguage((raw.headline ?? "").trim()) ||
+    plainSentence((raw.headline ?? "").trim()) ||
     fallbackSentences(summary, 1)[0] ||
     "A cautious read on this match.";
 
@@ -219,7 +232,7 @@ function normalizeLooseInsight(
     stance: raw.stance ?? "cautious",
     summary,
     risks,
-    trade_idea: raw.trade_idea?.trim() ? plainLanguage(raw.trade_idea.trim()) : null,
+    trade_idea: raw.trade_idea?.trim() ? plainSentence(raw.trade_idea.trim()) : null,
   };
 }
 
@@ -228,29 +241,29 @@ export async function generateAnalystInsight(
 ): Promise<{ insight: LlmInsight | null; skipReason?: string }> {
   const resolved = getResolvedLlm();
   if (!resolved) {
-    console.log("[llm] skipped: no configured provider");
+    log.debug("[llm] skipped: no configured provider");
     return { insight: null, skipReason: "no_api_key" };
   }
 
-  console.log(`[llm] resolved provider/model: ${resolved.displayName}`);
+  log.debug(`[llm] resolved provider/model: ${resolved.displayName}`);
   const prompt = buildPrompt(quant);
   const key = llmCacheKey(resolved.displayName, prompt);
   const mem = readMemoryLlmCache(key);
   if (mem) {
-    console.log(`[llm] cache hit (memory): ${resolved.displayName}`);
+    log.debug(`[llm] cache hit (memory): ${resolved.displayName}`);
     return { insight: mem };
   }
   const file = await readFileLlmCache(key);
   if (file) {
-    console.log(`[llm] cache hit (file): ${resolved.displayName}`);
+    log.debug(`[llm] cache hit (file): ${resolved.displayName}`);
     return { insight: file };
   }
-  console.log(`[llm] cache miss: ${resolved.displayName}`);
+  log.debug(`[llm] cache miss: ${resolved.displayName}`);
 
   if (resolved.provider === "ollama") {
     const up = await isOllamaReachable();
     if (!up) {
-      console.log(`[llm] skipped: ollama unreachable for ${resolved.displayName}`);
+      log.debug(`[llm] skipped: ollama unreachable for ${resolved.displayName}`);
       return {
         insight: null,
         skipReason:
@@ -278,19 +291,19 @@ export async function generateAnalystInsight(
   // strict attempt — skip straight to the tolerant json_object path.
   if (!resolved.structuredOutputs) {
     try {
-      console.log(`[llm] calling model (loose schema): ${resolved.displayName}`);
+      log.debug(`[llm] calling model (loose schema): ${resolved.displayName}`);
       const insight = await runLoose();
-      console.log(`[llm] success + cached: ${resolved.displayName}`);
+      log.debug(`[llm] success + cached: ${resolved.displayName}`);
       return { insight };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      console.log(`[llm] failed from ${resolved.displayName}: ${message}`);
+      log.debug(`[llm] failed from ${resolved.displayName}: ${message}`);
       return { insight: null, skipReason: `error: ${message}` };
     }
   }
 
   try {
-    console.log(`[llm] calling model: ${resolved.displayName}`);
+    log.debug(`[llm] calling model: ${resolved.displayName}`);
     const { object } = await generateObject({
       model: resolved.model,
       schema: InsightSchema,
@@ -312,21 +325,21 @@ export async function generateAnalystInsight(
       trade_idea: object.trade_idea?.trim() ? plainLanguage(object.trade_idea.trim()) : null,
     };
     await writeLlmCache(key, resolved.displayName, insight);
-    console.log(`[llm] success + cached: ${resolved.displayName}`);
+    log.debug(`[llm] success + cached: ${resolved.displayName}`);
     return { insight };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.log(`[llm] strict schema error from ${resolved.displayName}: ${message}`);
+    log.debug(`[llm] strict schema error from ${resolved.displayName}: ${message}`);
 
     // Retry once with a tolerant schema so near-valid outputs still render.
     try {
-      console.log(`[llm] retrying with loose schema: ${resolved.displayName}`);
+      log.debug(`[llm] retrying with loose schema: ${resolved.displayName}`);
       const insight = await runLoose();
-      console.log(`[llm] recovered with loose schema + cached: ${resolved.displayName}`);
+      log.debug(`[llm] recovered with loose schema + cached: ${resolved.displayName}`);
       return { insight };
     } catch (retryErr) {
       const retryMessage = retryErr instanceof Error ? retryErr.message : String(retryErr);
-      console.log(`[llm] retry failed from ${resolved.displayName}: ${retryMessage}`);
+      log.debug(`[llm] retry failed from ${resolved.displayName}: ${retryMessage}`);
       return { insight: null, skipReason: `error: ${retryMessage}` };
     }
   }

@@ -5,7 +5,6 @@
 import { canonicalizeTeam, type Wc2026Team } from "@/lib/teams";
 
 export const FIFA_WC_SERIES_ID = "11433";
-export const FIFA_WC_TAG_ID = "102232";
 
 export type GammaMarket = {
   question?: string | null;

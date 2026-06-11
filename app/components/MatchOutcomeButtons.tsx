@@ -18,8 +18,13 @@ function abbrev(team: string): string {
     .toUpperCase();
 }
 
-/** Polymarket-style win / draw / win pills for the match grid. */
-export function MatchOutcomeButtons({ teamA, teamB, teamAPrice, drawPrice, teamBPrice }: Props) {
+export function MatchOutcomeButtons({
+  teamA,
+  teamB,
+  teamAPrice,
+  drawPrice,
+  teamBPrice,
+}: Props) {
   const threeWay =
     drawPrice != null &&
     teamBPrice != null &&
@@ -27,7 +32,7 @@ export function MatchOutcomeButtons({ teamA, teamB, teamAPrice, drawPrice, teamB
     Number.isFinite(teamBPrice);
 
   return (
-    <div className="flex shrink-0 gap-1.5">
+    <div className="flex shrink-0 gap-1.5" aria-label="Market win prices">
       <Pill label={abbrev(teamA)} value={teamAPrice} variant="home" />
       {threeWay && (
         <>

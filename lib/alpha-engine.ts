@@ -77,33 +77,61 @@ function computeMarketEdge(p_expected: number, p_market: number | null) {
   };
 }
 
-function formatSummary(
-  result: Omit<AnalyzeResult, "summary" | "llm" | "llm_skip_reason" | "verdict">,
-): string {
-  const { match, p_model, p_expected, p_expected_source, p_market, edge, signal, ev_per_unit, breakdown } =
-    result;
-  const lines = [
-    `SUMMARY`,
-    `match:        ${match.home} vs ${match.away}  (${match.kickoff_iso})`,
-    `outcome:      ${match.home} to win (home YES)`,
-    `p_model:      ${p_model.toFixed(4)}  (Elo baseline)`,
-    `p_expected:   ${p_expected.toFixed(4)}  (source: ${p_expected_source})`,
-    `p_market:     ${p_market !== null ? p_market.toFixed(4) : "n/a"}  (source: ${result.market.source})`,
-    `edge:         ${edge !== null ? (edge >= 0 ? "+" : "") + edge.toFixed(4) : "n/a"}  (p_expected - p_market)`,
-    `signal:       ${signal === "NONE" ? "none" : signal}`,
-    `ev_per_unit:  ${ev_per_unit !== null ? ev_per_unit.toFixed(4) : "n/a"}`,
-    `elo:          ${breakdown.elo_home.toFixed(0)} vs ${breakdown.elo_away.toFixed(0)}, H2H adj ${breakdown.h2h_adjustment >= 0 ? "+" : ""}${breakdown.h2h_adjustment.toFixed(3)}`,
-  ];
-  if (result.data_gaps.length > 0) {
-    lines.push(`gaps:         ${result.data_gaps.join("; ")}`);
-  }
-  const mc = result.match_context;
-  if (mc.city) {
-    lines.push(
-      `venue:        ${mc.venue_label ?? mc.city} (${mc.elevation_m ?? "?"}m, ${mc.altitude_band ?? "?"})`,
-    );
-  }
-  return lines.join("\n");
+function buildAnalyzeCore(args: {
+  input: AnalyzeMatchInput;
+  p_market: number | null;
+  p_model: number;
+  p_expected: number;
+  p_expected_source: ExpectedSource;
+  elo_home: number;
+  elo_away: number;
+  h2h_adj: number;
+  base_p_home: number;
+  adjustments: AnalyzeResult["adjustments"];
+  marketSlug: string | null;
+  marketSource: AnalyzeResult["market"]["source"];
+  marketQuestion: string | null;
+  marketThreeWay: ThreeWayPrices | null | undefined;
+  data_gaps: string[];
+  match_context: AnalyzeResult["match_context"];
+  rag: AnalyzeResult["rag"];
+  sentiment: AnalyzeResult["sentiment"];
+  elo_built_at: string;
+}): Omit<AnalyzeResult, "llm" | "verdict"> {
+  return {
+    match: {
+      home: args.input.home,
+      away: args.input.away,
+      kickoff_iso: args.input.kickoff_iso,
+      competition: args.input.competition ?? "Match",
+    },
+    p_market: args.p_market,
+    p_model: Number(args.p_model.toFixed(4)),
+    p_expected: Number(args.p_expected.toFixed(4)),
+    p_expected_source: args.p_expected_source,
+    ...computeMarketEdge(args.p_expected, args.p_market),
+    breakdown: {
+      elo_home: args.elo_home,
+      elo_away: args.elo_away,
+      home_advantage: HOME_ADVANTAGE_ELO,
+      h2h_adjustment: Number(args.h2h_adj.toFixed(4)),
+      base_p_home: Number(args.base_p_home.toFixed(4)),
+    },
+    adjustments: args.adjustments,
+    market: buildMarketBlock(
+      args.marketSlug,
+      args.marketSource,
+      args.marketQuestion,
+      args.p_market,
+      args.marketThreeWay,
+      args.input,
+    ),
+    data_gaps: args.data_gaps,
+    match_context: args.match_context,
+    rag: args.rag,
+    sentiment: args.sentiment,
+    elo_built_at: args.elo_built_at,
+  };
 }
 
 export type AnalyzeMatchOptions = {
@@ -133,7 +161,7 @@ export async function analyzeMatch(
 
   if (ratings.source === "seed-ratings" || ratings.source === "inline-default") {
     data_gaps.push(
-      "Using starter team ratings — run `npm run data:build -- --file data/results.csv` for fuller history",
+      "Using starter team ratings; run `npm run data:build -- --file data/results.csv` for fuller history",
     );
   }
 
@@ -148,7 +176,7 @@ export async function analyzeMatch(
     is_world_cup: input.is_world_cup,
   });
   if (!isRagAvailable()) {
-    data_gaps.push("No RAG chunks — run `npm run data:build -- --file data/results.csv`");
+    data_gaps.push("No RAG chunks; run `npm run data:build -- --file data/results.csv`");
   }
 
   let sentiment = null;
@@ -253,90 +281,22 @@ export async function analyzeMatch(
   }
 
   let llm = null;
-  let llm_skip_reason: string | undefined;
 
-  if (!includeLlm) {
-    llm_skip_reason = options.includeLlm === false ? "disabled" : "no_api_key";
-  } else {
-    const interimBase: Omit<AnalyzeResult, "summary" | "llm" | "llm_skip_reason" | "verdict"> =
-      {
-      match: {
-        home: input.home,
-        away: input.away,
-        kickoff_iso: input.kickoff_iso,
-        competition: input.competition ?? "Match",
-      },
-      p_market,
-      p_model: Number(p_model.toFixed(4)),
-      p_expected: Number(p_expected.toFixed(4)),
-      p_expected_source,
-      ...computeMarketEdge(p_expected, p_market),
-      breakdown: {
-        elo_home,
-        elo_away,
-        home_advantage: HOME_ADVANTAGE_ELO,
-        h2h_adjustment: Number(h2h_adj.toFixed(4)),
-        base_p_home: Number(base_p_home.toFixed(4)),
-      },
-      adjustments,
-      market: buildMarketBlock(
-        marketSlug,
-        marketSource,
-        marketQuestion,
-        p_market,
-        marketThreeWay,
-        input,
-      ),
-      data_gaps,
-      match_context,
-      rag,
-      sentiment,
-      elo_built_at: ratings.built_at,
-    };
-
-    const { insight, skipReason } = await generateAnalystInsight(interimBase);
-    if (insight) {
-      p_expected = insight.p_expected_home_win;
-      p_expected_source = "llm";
-      llm = insight;
-    } else {
-      llm_skip_reason = skipReason;
-      if (p_expected_source === "elo" && rag.hits.length > 0) {
-        data_gaps.push("LLM unavailable — using team ratings only (enable Ollama or Gemini for richer analysis)");
-      }
-    }
-  }
-
-  p_expected = Number(p_expected.toFixed(4));
-
-  const partial: Omit<AnalyzeResult, "summary" | "llm" | "llm_skip_reason" | "verdict"> = {
-    match: {
-      home: input.home,
-      away: input.away,
-      kickoff_iso: input.kickoff_iso,
-      competition: input.competition ?? "Match",
-    },
+  const coreArgs = {
+    input,
     p_market,
-    p_model: Number(p_model.toFixed(4)),
+    p_model,
     p_expected,
     p_expected_source,
-    ...computeMarketEdge(p_expected, p_market),
-    breakdown: {
-      elo_home,
-      elo_away,
-      home_advantage: HOME_ADVANTAGE_ELO,
-      h2h_adjustment: Number(h2h_adj.toFixed(4)),
-      base_p_home: Number(base_p_home.toFixed(4)),
-    },
+    elo_home,
+    elo_away,
+    h2h_adj,
+    base_p_home,
     adjustments,
-    market: buildMarketBlock(
-      marketSlug,
-      marketSource,
-      marketQuestion,
-      p_market,
-      marketThreeWay,
-      input,
-    ),
+    marketSlug,
+    marketSource,
+    marketQuestion,
+    marketThreeWay,
     data_gaps,
     match_context,
     rag,
@@ -344,16 +304,32 @@ export async function analyzeMatch(
     elo_built_at: ratings.built_at,
   };
 
-  const summary = formatSummary(partial);
-  const withSummary = {
-    ...partial,
-    summary,
-    llm,
-    ...(llm_skip_reason ? { llm_skip_reason } : {}),
-  };
+  if (includeLlm) {
+    const { insight } = await generateAnalystInsight(buildAnalyzeCore(coreArgs));
+    if (insight) {
+      p_expected = insight.p_expected_home_win;
+      p_expected_source = "llm";
+      llm = insight;
+    } else if (p_expected_source === "elo" && rag.hits.length > 0) {
+      data_gaps.push(
+        "LLM unavailable; using team ratings only (enable Ollama or Gemini for richer analysis)",
+      );
+    }
+  }
+
+  p_expected = Number(p_expected.toFixed(4));
+
+  const partial = buildAnalyzeCore({
+    ...coreArgs,
+    p_expected,
+    p_expected_source,
+    data_gaps,
+  });
+
+  const withLlm = { ...partial, llm };
   return {
-    ...withSummary,
-    verdict: buildMismatchVerdict(withSummary),
+    ...withLlm,
+    verdict: buildMismatchVerdict(withLlm),
   };
 }
 

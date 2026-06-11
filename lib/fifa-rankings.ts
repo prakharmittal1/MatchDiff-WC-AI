@@ -24,10 +24,6 @@ export function fifaRankFor(team: string): number | null {
   return RANK_BY_TEAM.get(canonical) ?? null;
 }
 
-export function fifaRankingsAsOf(): string | null {
-  return file.as_of ?? null;
-}
-
 /** Display label, e.g. "France (1)". */
 export function formatTeamWithRank(team: string): string {
   const rank = fifaRankFor(team);

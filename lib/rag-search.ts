@@ -23,7 +23,7 @@ function tokens(text: string): string[] {
     .filter((t) => t.length > 2 && !STOP.has(t));
 }
 
-/** Keyword + recency search (no embeddings). */
+/** Keyword + recency search over direct head-to-head results only. */
 export function searchPlaybookChunks(
   chunks: PlaybookChunk[],
   home: Wc2026Team,
@@ -42,20 +42,14 @@ export function searchPlaybookChunks(
   const scored: RagHit[] = [];
 
   for (const c of chunks) {
-    const involves =
+    const isDirectH2h =
       (c.home === home && c.away === away) ||
-      (c.home === away && c.away === home) ||
-      c.home === home ||
-      c.away === home ||
-      c.home === away ||
-      c.away === away;
-
-    if (!involves) continue;
+      (c.home === away && c.away === home);
+    if (!isDirectH2h) continue;
 
     let score = 0;
     if (c.home === home && c.away === away) score += 40;
-    else if (c.home === away && c.away === home) score += 28;
-    else score += 12;
+    else score += 28;
 
     const t = c.tournament.toLowerCase();
     if (t.includes("world cup") || t.includes("fifa")) score += 15;
