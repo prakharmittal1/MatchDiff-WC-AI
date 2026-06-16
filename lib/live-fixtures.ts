@@ -24,6 +24,7 @@ import { resolveMatchContext } from "@/lib/match-context";
 import { loadGroupStageFixtures } from "@/lib/wc26-group-fixtures";
 import { lookupWc26ScheduledVenue } from "@/lib/wc26-schedule";
 import { quoteHomeMoneylineYes } from "@/lib/polymarket-prices";
+import { filterUpcomingFixtures } from "@/lib/upcoming-fixtures";
 
 const RANGE_DAYS = 120;
 
@@ -201,7 +202,14 @@ async function finishBootstrap(
   };
 }
 
-export async function loadDashboardFixtures(): Promise<FixturesBootstrap> {
+function withUpcomingFixturesOnly(bootstrap: FixturesBootstrap): FixturesBootstrap {
+  return {
+    ...bootstrap,
+    fixtures: filterUpcomingFixtures(bootstrap.fixtures),
+  };
+}
+
+async function loadDashboardFixturesUncached(): Promise<FixturesBootstrap> {
   const stubDetail =
     "Using demo fixtures; Polymarket or football-data.org unavailable.";
 
@@ -248,6 +256,10 @@ export async function loadDashboardFixtures(): Promise<FixturesBootstrap> {
   return loadFootballDataOrBundled(stubDetail);
 }
 
+export async function loadDashboardFixtures(): Promise<FixturesBootstrap> {
+  return withUpcomingFixturesOnly(await loadDashboardFixturesUncached());
+}
+
 async function loadFootballDataOrBundled(stubDetail: string): Promise<FixturesBootstrap> {
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
@@ -290,11 +302,11 @@ async function loadFootballDataOrBundled(stubDetail: string): Promise<FixturesBo
 }
 
 const cachedDashboardFixtures = unstable_cache(
-  async () => loadDashboardFixtures(),
+  async () => loadDashboardFixturesUncached(),
   ["dashboard-fixtures-group-stage-v1"],
   { revalidate: 300 },
 );
 
 export async function getCachedDashboardFixtures(): Promise<FixturesBootstrap> {
-  return cachedDashboardFixtures();
+  return withUpcomingFixturesOnly(await cachedDashboardFixtures());
 }

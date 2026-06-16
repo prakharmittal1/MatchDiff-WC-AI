@@ -11,6 +11,7 @@ import { MatchAnalysisModal } from "@/app/components/MatchAnalysisModal";
 import { MatchGrid } from "@/app/components/MatchGrid";
 import { requestMatchAnalysis } from "@/lib/analyze-client";
 import { filterFixturesByGroup } from "@/lib/fixture-groups";
+import { filterUpcomingFixtures } from "@/lib/upcoming-fixtures";
 import type { AnalyzeResult } from "@/lib/alpha-types";
 import { FIFA_WC_2026_FIXTURES_URL, POLYMARKET_WC_GAMES_URL } from "@/lib/external-links";
 import type { Fixture } from "@/lib/fixtures";
@@ -34,9 +35,21 @@ function findFixture(fixtures: Fixture[], id: string | null | undefined): Fixtur
 }
 
 export function Dashboard({ fixtures, initialMatchId = null }: Props) {
+  const [nowMs, setNowMs] = useState(() => Date.now());
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNowMs(Date.now()), 60_000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const upcomingFixtures = useMemo(
+    () => filterUpcomingFixtures(fixtures, nowMs),
+    [fixtures, nowMs],
+  );
+
   const deepLinkFixture = useMemo(
-    () => findFixture(fixtures, initialMatchId),
-    [fixtures, initialMatchId],
+    () => findFixture(upcomingFixtures, initialMatchId),
+    [upcomingFixtures, initialMatchId],
   );
 
   const [activeId, setActiveId] = useState<string | undefined>(deepLinkFixture?.id);
@@ -48,8 +61,8 @@ export function Dashboard({ fixtures, initialMatchId = null }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const filteredFixtures = useMemo(
-    () => filterFixturesByGroup(fixtures, selectedGroup),
-    [fixtures, selectedGroup],
+    () => filterFixturesByGroup(upcomingFixtures, selectedGroup),
+    [upcomingFixtures, selectedGroup],
   );
 
   const syncMatchParam = useCallback((fixtureId?: string) => {
@@ -171,7 +184,7 @@ export function Dashboard({ fixtures, initialMatchId = null }: Props) {
             Group stage
           </h2>
           <GroupFilter
-            fixtures={fixtures}
+            fixtures={upcomingFixtures}
             value={selectedGroup}
             onChange={setSelectedGroup}
           />

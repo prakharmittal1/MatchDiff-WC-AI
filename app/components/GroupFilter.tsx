@@ -21,7 +21,7 @@ export function GroupFilter({ fixtures, value, onChange }: Props) {
         htmlFor="group-filter"
         className="hidden text-[11px] font-semibold text-slate-200 sm:inline"
       >
-        Group
+        Filter Group
       </label>
       <select
         id="group-filter"
