@@ -6,6 +6,7 @@ type Props = {
   teamAPrice: number;
   drawPrice?: number | null;
   teamBPrice?: number | null;
+  hasActiveOdds?: boolean;
 };
 
 function abbrev(team: string): string {
@@ -24,7 +25,21 @@ export function MatchOutcomeButtons({
   teamAPrice,
   drawPrice,
   teamBPrice,
+  hasActiveOdds = true,
 }: Props) {
+  if (!hasActiveOdds) {
+    return (
+      <div
+        className="flex h-[3.25rem] w-[6.75rem] shrink-0 items-center justify-center rounded-xl bg-slate-100 px-2 text-center ring-1 ring-black/5"
+        aria-label="No active market odds"
+      >
+        <span className="text-[10px] font-semibold leading-tight text-slate-500">
+          No Active Odds
+        </span>
+      </div>
+    );
+  }
+
   const threeWay =
     drawPrice != null &&
     teamBPrice != null &&

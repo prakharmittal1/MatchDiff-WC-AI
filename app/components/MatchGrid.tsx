@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { MatchOutcomeButtons } from "@/app/components/MatchOutcomeButtons";
 import { TeamName } from "@/app/components/TeamName";
+import { trackMatchGridCollapse, trackMatchGridLoadMore, trackMatchTileClick } from "@/lib/analytics";
 import { formatTeamWithRank } from "@/lib/fifa-rankings";
 import { formatKickoffTile, resolveFixtureVenueTile, type Fixture } from "@/lib/fixtures";
 
@@ -50,10 +51,15 @@ export function MatchGrid({ fixtures, onAnalyze, activeId }: Props) {
   const hasMore = visibleCount < fixtures.length;
 
   const loadMore = useCallback(() => {
-    setVisibleRows((rows) => rows + ROWS_PER_LOAD);
-  }, []);
+    setVisibleRows((rows) => {
+      const next = rows + ROWS_PER_LOAD;
+      trackMatchGridLoadMore(Math.min(fixtures.length, next * cols));
+      return next;
+    });
+  }, [cols, fixtures.length]);
 
   const collapse = useCallback(() => {
+    trackMatchGridCollapse();
     setVisibleRows(INITIAL_ROWS);
   }, []);
 
@@ -71,7 +77,10 @@ export function MatchGrid({ fixtures, onAnalyze, activeId }: Props) {
             <button
               key={f.id}
               type="button"
-              onClick={(e) => onAnalyze(f, e.currentTarget.getBoundingClientRect())}
+              onClick={(e) => {
+                trackMatchTileClick(f.id);
+                onAnalyze(f, e.currentTarget.getBoundingClientRect());
+              }}
               aria-label={`${formatTeamWithRank(f.home)} vs ${formatTeamWithRank(f.away)}, ${formatKickoffTile(f.kickoff_iso)}, ${venue}`}
               aria-current={active ? "true" : undefined}
               aria-haspopup="dialog"
@@ -103,6 +112,7 @@ export function MatchGrid({ fixtures, onAnalyze, activeId }: Props) {
                   teamAPrice={f.market_home_win}
                   drawPrice={f.market_draw}
                   teamBPrice={f.market_away_win}
+                  hasActiveOdds={f.market_price_source === "polymarket"}
                 />
               </div>
 

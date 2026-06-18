@@ -20,6 +20,7 @@
   "dependencies": {
     "@ai-sdk/google": "^3.0.72",
     "@ai-sdk/groq": "^3.0.39",
+    "@vercel/analytics": "^2.0.1",
     "ai": "^6.0.177",
     "next": "16.2.6",
     "ollama-ai-provider-v2": "^3.5.1",

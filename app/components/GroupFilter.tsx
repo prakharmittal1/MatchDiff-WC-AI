@@ -1,6 +1,7 @@
 "use client";
 
 import { groupLetter, listFixtureGroups } from "@/lib/fixture-groups";
+import { trackGroupFilterChange } from "@/lib/analytics";
 import type { Fixture } from "@/lib/fixtures";
 import { useMemo } from "react";
 
@@ -26,7 +27,11 @@ export function GroupFilter({ fixtures, value, onChange }: Props) {
       <select
         id="group-filter"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          const group = e.target.value;
+          trackGroupFilterChange(group);
+          onChange(group);
+        }}
         className="light-card light-surface cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-800 transition-colors hover:border-emerald-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
       >
         <option value="all">All</option>
