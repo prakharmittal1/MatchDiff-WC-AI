@@ -21,7 +21,7 @@ import {
   UPCOMING_FIXTURES,
 } from "@/lib/fixtures";
 import { resolveMatchContext } from "@/lib/match-context";
-import { loadGroupStageFixtures } from "@/lib/wc26-group-fixtures";
+import { loadWc26Fixtures } from "@/lib/wc26-group-fixtures";
 import { lookupWc26ScheduledVenue } from "@/lib/wc26-schedule";
 import { quoteHomeMoneylineYes } from "@/lib/polymarket-prices";
 import { filterUpcomingFixtures } from "@/lib/upcoming-fixtures";
@@ -62,8 +62,8 @@ function loadBundledBriefs(): FootballFixtureBrief[] {
       kickoff_iso: f.kickoff_iso,
       home_api_name: f.home,
       away_api_name: f.away,
-      home_team: f.home,
-      away_team: f.away,
+      home_team: f.home as FootballFixtureBrief["home_team"],
+      away_team: f.away as FootballFixtureBrief["away_team"],
       competition: f.competition,
       venue: f.venue ?? null,
     }));
@@ -222,12 +222,12 @@ async function loadDashboardFixturesUncached(): Promise<FixturesBootstrap> {
     polyError = err instanceof Error ? err.message : String(err);
   }
 
-  const groupFixtures = loadGroupStageFixtures(polyGames);
+  const groupFixtures = loadWc26Fixtures(polyGames);
   if (groupFixtures.length > 0) {
     const withOdds = groupFixtures.filter((f) => f.market_price_source === "polymarket").length;
     const detail = polyError
-      ? `${groupFixtures.length} group stage matches; Polymarket unavailable (${polyError}).`
-      : `${groupFixtures.length} group stage matches; ${withOdds} with Polymarket odds.`;
+      ? `${groupFixtures.length} tournament matches; Polymarket unavailable (${polyError}).`
+      : `${groupFixtures.length} tournament matches; ${withOdds} with Polymarket odds.`;
     return {
       fixtures: groupFixtures,
       source: withOdds > 0 ? "polymarket" : "bundled",
@@ -303,7 +303,7 @@ async function loadFootballDataOrBundled(stubDetail: string): Promise<FixturesBo
 
 const cachedDashboardFixtures = unstable_cache(
   async () => loadDashboardFixturesUncached(),
-  ["dashboard-fixtures-group-stage-v1"],
+  ["dashboard-fixtures-wc26-v2"],
   { revalidate: 300 },
 );
 

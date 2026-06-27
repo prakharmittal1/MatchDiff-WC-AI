@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  filterFixturesByGroup,
+  filterFixturesByStage,
   fixtureGroup,
+  fixtureRound,
+  fixtureStage,
   groupLetter,
-  listFixtureGroups,
+  listFixtureStages,
 } from "@/lib/fixture-groups";
 import type { Fixture } from "@/lib/fixtures";
 
@@ -20,16 +22,27 @@ function fx(competition: string): Fixture {
 }
 
 describe("fixtureGroup", () => {
-  it("parses group from competition string", () => {
+  it("parses group and knockout stage from competition string", () => {
     expect(fixtureGroup("FIFA World Cup · Group A")).toBe("Group A");
     expect(fixtureGroup("FIFA World Cup · Group L")).toBe("Group L");
+    expect(fixtureRound("FIFA World Cup · Round of 32")).toBe("Round of 32");
+    expect(fixtureStage("FIFA World Cup · Quarter-finals")).toBe("Quarter-finals");
     expect(groupLetter("Group C")).toBe("C");
   });
 
-  it("filters fixtures by group", () => {
-    const fixtures = [fx("FIFA World Cup · Group A"), fx("FIFA World Cup · Group B")];
-    expect(listFixtureGroups(fixtures)).toEqual(["Group A", "Group B"]);
-    expect(filterFixturesByGroup(fixtures, "Group B")).toHaveLength(1);
-    expect(filterFixturesByGroup(fixtures, "all")).toHaveLength(2);
+  it("filters fixtures by stage", () => {
+    const fixtures = [
+      fx("FIFA World Cup · Group A"),
+      fx("FIFA World Cup · Group B"),
+      fx("FIFA World Cup · Round of 32"),
+    ];
+    expect(listFixtureStages(fixtures)).toEqual([
+      "Group A",
+      "Group B",
+      "Round of 32",
+    ]);
+    expect(filterFixturesByStage(fixtures, "Group B")).toHaveLength(1);
+    expect(filterFixturesByStage(fixtures, "Round of 32")).toHaveLength(1);
+    expect(filterFixturesByStage(fixtures, "all")).toHaveLength(3);
   });
 });

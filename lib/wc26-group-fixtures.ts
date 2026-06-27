@@ -8,14 +8,23 @@ type VenueRow = {
   home: string;
   away: string;
   date: string;
+  kickoff_iso?: string;
   location: string;
   city: string;
   group?: string;
+  round?: string;
   match_number?: number;
 };
 
 function fixtureKey(home: string, away: string, date: string): string {
   return `${home}|${away}|${date}`;
+}
+
+function polyLookupKey(home: string, away: string, date: string): string | null {
+  const h = canonicalizeTeam(home);
+  const a = canonicalizeTeam(away);
+  if (!h || !a) return null;
+  return fixtureKey(h, a, date);
 }
 
 export function indexPolymarketGames(games: ParsedWcGame[]): Map<string, ParsedWcGame> {
@@ -28,27 +37,35 @@ export function indexPolymarketGames(games: ParsedWcGame[]): Map<string, ParsedW
   return map;
 }
 
-/** All 72 WC26 group-stage fixtures from official schedule, with Polymarket odds when matched. */
-export function loadGroupStageFixtures(polymarketGames: ParsedWcGame[] = []): Fixture[] {
+function competitionLabel(row: VenueRow): string {
+  if (row.group) return `FIFA World Cup · ${row.group}`;
+  if (row.round) return `FIFA World Cup · ${row.round}`;
+  return "FIFA World Cup";
+}
+
+function fixtureId(row: VenueRow, index: number): string {
+  const n = String(row.match_number ?? index + 1).padStart(2, "0");
+  const stage = row.group ? "gs" : "ko";
+  return `${stage}-${n}-${row.date}`;
+}
+
+/** All WC26 schedule fixtures (group stage + knockout), with Polymarket odds when matched. */
+export function loadWc26Fixtures(polymarketGames: ParsedWcGame[] = []): Fixture[] {
   const poly = indexPolymarketGames(polymarketGames);
-  const rows = (venuesData.matches as VenueRow[]).filter((r) => r.group);
+  const rows = venuesData.matches as VenueRow[];
 
   const fixtures: Fixture[] = [];
   for (const row of rows) {
-    const home = canonicalizeTeam(row.home);
-    const away = canonicalizeTeam(row.away);
-    if (!home || !away) continue;
-
-    const key = fixtureKey(home, away, row.date);
-    const game = poly.get(key);
-    const kickoff_iso = game?.kickoff_iso ?? `${row.date}T19:00:00Z`;
+    const polyKey = polyLookupKey(row.home, row.away, row.date);
+    const game = polyKey ? poly.get(polyKey) : undefined;
+    const kickoff_iso = game?.kickoff_iso ?? row.kickoff_iso ?? `${row.date}T19:00:00Z`;
 
     fixtures.push({
-      id: `gs-${String(row.match_number ?? fixtures.length + 1).padStart(2, "0")}-${row.date}`,
-      home,
-      away,
+      id: fixtureId(row, fixtures.length),
+      home: row.home,
+      away: row.away,
       kickoff_iso,
-      competition: `FIFA World Cup · ${row.group}`,
+      competition: competitionLabel(row),
       venue: row.city,
       market_home_win: game ? Number(game.prices.home.toFixed(4)) : 0.5,
       market_draw: game ? Number(game.prices.draw.toFixed(4)) : null,
@@ -71,6 +88,15 @@ export function loadGroupStageFixtures(polymarketGames: ParsedWcGame[] = []): Fi
   return fixtures;
 }
 
+/** @deprecated Use loadWc26Fixtures */
+export const loadGroupStageFixtures = loadWc26Fixtures;
+
 export const GROUP_STAGE_MATCH_COUNT = (venuesData.matches as VenueRow[]).filter(
   (r) => r.group,
 ).length;
+
+export const KNOCKOUT_MATCH_COUNT = (venuesData.matches as VenueRow[]).filter(
+  (r) => r.round,
+).length;
+
+export const WC26_MATCH_COUNT = venuesData.match_count;

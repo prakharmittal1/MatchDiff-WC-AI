@@ -8,8 +8,8 @@
  */
 
 import { tileCityForFixture } from "@/lib/match-context";
+import { canonicalizeTeam } from "@/lib/teams";
 import { lookupWc26ScheduledVenue } from "@/lib/wc26-schedule";
-import type { Wc2026Team } from "@/lib/teams";
 
 export type FixturePriceSource = "polymarket" | "none";
 
@@ -21,8 +21,8 @@ export type MarketThreeWay = {
 
 export type Fixture = {
   id: string;
-  home: Wc2026Team;
-  away: Wc2026Team;
+  home: string;
+  away: string;
   kickoff_iso: string;
   competition: string;
   /** Polymarket home-win implied probability (0–1). */
@@ -167,21 +167,25 @@ export function resolveFixtureVenueTile(
   if (fromApi) return fromApi;
 
   const isWc = f.is_world_cup ?? /world cup|fifa/i.test(f.competition ?? "");
+  const homeTeam = canonicalizeTeam(f.home);
+  const awayTeam = canonicalizeTeam(f.away);
 
-  if (isWc) {
-    const scheduled = lookupWc26ScheduledVenue(f.home, f.away, f.kickoff_iso);
+  if (isWc && homeTeam && awayTeam) {
+    const scheduled = lookupWc26ScheduledVenue(homeTeam, awayTeam, f.kickoff_iso);
     if (scheduled) return scheduled.city;
   }
 
-  const city = tileCityForFixture({
-    home: f.home,
-    away: f.away,
-    kickoff_iso: f.kickoff_iso,
-    competition: f.competition,
-    venue: f.venue,
-    is_world_cup: isWc,
-  });
-  if (city) return city;
+  if (homeTeam && awayTeam) {
+    const city = tileCityForFixture({
+      home: homeTeam,
+      away: awayTeam,
+      kickoff_iso: f.kickoff_iso,
+      competition: f.competition,
+      venue: f.venue,
+      is_world_cup: isWc,
+    });
+    if (city) return city;
+  }
 
   return "n/a";
 }

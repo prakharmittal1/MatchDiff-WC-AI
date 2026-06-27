@@ -12,6 +12,7 @@ config({ path: path.join(process.cwd(), ".env.local") });
 
 import { loadDashboardFixtures } from "@/lib/live-fixtures";
 import { gatherMatchSentiment, isSentimentConfigured } from "@/lib/sentiment/gather";
+import { canonicalizeTeam } from "@/lib/teams";
 
 async function main() {
   if (!isSentimentConfigured()) {
@@ -28,7 +29,11 @@ async function main() {
   let empty = 0;
 
   for (const f of fixtures) {
-    const snap = await gatherMatchSentiment(f.home, f.away, f.kickoff_iso, {
+    const home = canonicalizeTeam(f.home);
+    const away = canonicalizeTeam(f.away);
+    if (!home || !away) continue;
+
+    const snap = await gatherMatchSentiment(home, away, f.kickoff_iso, {
       useCache: false,
     });
     if (!snap) continue;

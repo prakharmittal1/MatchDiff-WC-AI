@@ -1,11 +1,32 @@
 import type { Fixture } from "@/lib/fixtures";
 
 const GROUP_RE = /Group\s+([A-L])\b/i;
+const KNOCKOUT_ROUNDS = [
+  "Round of 32",
+  "Round of 16",
+  "Quarter-finals",
+  "Semi-finals",
+  "Third place",
+  "Final",
+] as const;
+
+export type FixtureStage = "all" | `Group ${string}` | (typeof KNOCKOUT_ROUNDS)[number];
 
 export function fixtureGroup(competition: string): string | null {
   const m = GROUP_RE.exec(competition);
   if (!m?.[1]) return null;
   return `Group ${m[1].toUpperCase()}`;
+}
+
+export function fixtureRound(competition: string): string | null {
+  for (const round of KNOCKOUT_ROUNDS) {
+    if (competition.includes(round)) return round;
+  }
+  return null;
+}
+
+export function fixtureStage(competition: string): string | null {
+  return fixtureGroup(competition) ?? fixtureRound(competition);
 }
 
 /** Letter only for UI labels (e.g. "Group C" → "C"). */
@@ -14,16 +35,25 @@ export function groupLetter(group: string): string {
   return m?.[1]?.toUpperCase() ?? group;
 }
 
-export function listFixtureGroups(fixtures: Fixture[]): string[] {
+export function listFixtureStages(fixtures: Fixture[]): string[] {
   const set = new Set<string>();
   for (const f of fixtures) {
-    const g = fixtureGroup(f.competition);
-    if (g) set.add(g);
+    const stage = fixtureStage(f.competition);
+    if (stage) set.add(stage);
   }
-  return [...set].sort((a, b) => a.localeCompare(b));
+
+  const groups = [...set].filter((s) => s.startsWith("Group ")).sort((a, b) => a.localeCompare(b));
+  const rounds = KNOCKOUT_ROUNDS.filter((r) => set.has(r));
+  return [...groups, ...rounds];
 }
 
-export function filterFixturesByGroup(fixtures: Fixture[], group: string | "all"): Fixture[] {
-  if (group === "all") return fixtures;
-  return fixtures.filter((f) => fixtureGroup(f.competition) === group);
+/** @deprecated Use listFixtureStages */
+export const listFixtureGroups = listFixtureStages;
+
+export function filterFixturesByStage(fixtures: Fixture[], stage: string | "all"): Fixture[] {
+  if (stage === "all") return fixtures;
+  return fixtures.filter((f) => fixtureStage(f.competition) === stage);
 }
+
+/** @deprecated Use filterFixturesByStage */
+export const filterFixturesByGroup = filterFixturesByStage;

@@ -7,8 +7,9 @@
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { formatScheduleTeamName } from "@/lib/wc26-schedule-teams";
 import { cityFromScheduleLocation } from "@/lib/wc26-schedule-locations";
-import { canonicalizeTeam } from "@/lib/teams";
+import { wc26RoundLabel } from "@/lib/wc26-rounds";
 
 const FEED_URL = "https://fixturedownload.com/feed/json/fifa-world-cup-2026";
 
@@ -19,21 +20,31 @@ type FeedMatch = {
   AwayTeam: string;
   Group?: string;
   MatchNumber?: number;
+  RoundNumber?: number;
 };
 
 type VenueRow = {
   home: string;
   away: string;
   date: string;
+  kickoff_iso: string;
   location: string;
   city: string;
   group?: string;
+  round?: string;
   match_number?: number;
 };
 
 function dateFromUtc(dateUtc: string): string | null {
   const m = /^(\d{4}-\d{2}-\d{2})/.exec(dateUtc.trim());
   return m?.[1] ?? null;
+}
+
+function kickoffIsoFromUtc(dateUtc: string): string | null {
+  const normalized = dateUtc.trim().replace(" ", "T");
+  const d = new Date(normalized.endsWith("Z") ? normalized : `${normalized}Z`);
+  if (!Number.isFinite(d.getTime())) return null;
+  return d.toISOString();
 }
 
 async function main() {
@@ -44,19 +55,27 @@ async function main() {
   const matches: VenueRow[] = [];
 
   for (const row of raw) {
-    const home = canonicalizeTeam(row.HomeTeam);
-    const away = canonicalizeTeam(row.AwayTeam);
+    const home = formatScheduleTeamName(row.HomeTeam);
+    const away = formatScheduleTeamName(row.AwayTeam);
     const date = dateFromUtc(row.DateUtc);
+    const kickoff_iso = kickoffIsoFromUtc(row.DateUtc);
     const city = cityFromScheduleLocation(row.Location);
-    if (!home || !away || !date || !city) continue;
+    if (!date || !kickoff_iso || !city) continue;
+
+    const round =
+      row.Group == null && row.RoundNumber != null
+        ? wc26RoundLabel(row.RoundNumber, row.MatchNumber) ?? undefined
+        : undefined;
 
     matches.push({
       home,
       away,
       date,
+      kickoff_iso,
       location: row.Location,
       city,
       ...(row.Group ? { group: row.Group } : {}),
+      ...(round ? { round } : {}),
       ...(row.MatchNumber != null ? { match_number: row.MatchNumber } : {}),
     });
   }

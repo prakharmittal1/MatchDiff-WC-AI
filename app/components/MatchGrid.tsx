@@ -7,6 +7,7 @@ import { TeamName } from "@/app/components/TeamName";
 import { trackMatchGridCollapse, trackMatchGridLoadMore, trackMatchTileClick } from "@/lib/analytics";
 import { formatTeamWithRank } from "@/lib/fifa-rankings";
 import { formatKickoffTile, resolveFixtureVenueTile, type Fixture } from "@/lib/fixtures";
+import { isAnalyzableFixture } from "@/lib/wc26-schedule-teams";
 
 const INITIAL_ROWS = 5;
 const ROWS_PER_LOAD = 5;
@@ -72,23 +73,27 @@ export function MatchGrid({ fixtures, onAnalyze, activeId }: Props) {
         {visibleFixtures.map((f) => {
           const active = f.id === activeId;
           const venue = resolveFixtureVenueTile(f);
+          const analyzable = isAnalyzableFixture(f.home, f.away);
 
           return (
             <button
               key={f.id}
               type="button"
+              disabled={!analyzable}
               onClick={(e) => {
+                if (!analyzable) return;
                 trackMatchTileClick(f.id);
                 onAnalyze(f, e.currentTarget.getBoundingClientRect());
               }}
               aria-label={`${formatTeamWithRank(f.home)} vs ${formatTeamWithRank(f.away)}, ${formatKickoffTile(f.kickoff_iso)}, ${venue}`}
               aria-current={active ? "true" : undefined}
-              aria-haspopup="dialog"
+              aria-haspopup={analyzable ? "dialog" : undefined}
+              aria-disabled={!analyzable ? true : undefined}
               className={[
                 "match-tile light-card group relative w-full overflow-hidden rounded-xl p-3.5 text-left",
-                "transition-all hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-lg",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40",
-                "cursor-pointer",
+                analyzable
+                  ? "cursor-pointer transition-all hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+                  : "cursor-default opacity-90",
                 active
                   ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-white ring-2 ring-emerald-500/60 shadow-md"
                   : "",
@@ -128,7 +133,7 @@ export function MatchGrid({ fixtures, onAnalyze, activeId }: Props) {
 
       {fixtures.length === 0 && (
         <p className="light-card rounded-xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-600">
-          No matches in this group.
+          No matches in this stage.
         </p>
       )}
 
