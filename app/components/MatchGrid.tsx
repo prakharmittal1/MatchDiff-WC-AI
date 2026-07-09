@@ -6,6 +6,7 @@ import { MatchOutcomeButtons } from "@/app/components/MatchOutcomeButtons";
 import { TeamName } from "@/app/components/TeamName";
 import { trackMatchGridCollapse, trackMatchGridLoadMore, trackMatchTileClick } from "@/lib/analytics";
 import { formatTeamWithRank } from "@/lib/fifa-rankings";
+import { fixtureRound } from "@/lib/fixture-groups";
 import { formatKickoffTile, resolveFixtureVenueTile, type Fixture } from "@/lib/fixtures";
 import { isAnalyzableFixture } from "@/lib/wc26-schedule-teams";
 
@@ -74,6 +75,7 @@ export function MatchGrid({ fixtures, onAnalyze, activeId }: Props) {
           const active = f.id === activeId;
           const venue = resolveFixtureVenueTile(f);
           const analyzable = isAnalyzableFixture(f.home, f.away);
+          const round = fixtureRound(f.competition);
 
           return (
             <button
@@ -99,6 +101,11 @@ export function MatchGrid({ fixtures, onAnalyze, activeId }: Props) {
                   : "",
               ].join(" ")}
             >
+              {round && (
+                <p className="mb-1 truncate text-[9px] font-bold uppercase tracking-wide text-emerald-700">
+                  {round}
+                </p>
+              )}
               <p className="mb-2.5 truncate text-[10px] font-bold leading-snug text-slate-900">
                 {formatKickoffTile(f.kickoff_iso)}
                 <span className="text-slate-500"> · </span>

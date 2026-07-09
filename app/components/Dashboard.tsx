@@ -181,7 +181,7 @@ export function Dashboard({ fixtures, initialMatchId = null }: Props) {
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <h2 className="flex items-center gap-2 text-sm font-semibold text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]">
             <span aria-hidden className="inline-block size-2 rounded-full bg-emerald-400" />
-            Group stage &amp; knockout
+            Quarter-finals
           </h2>
           <GroupFilter
             fixtures={upcomingFixtures}

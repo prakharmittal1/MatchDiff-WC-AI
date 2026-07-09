@@ -1,14 +1,18 @@
 import type { Fixture } from "@/lib/fixtures";
 
 const GROUP_RE = /Group\s+([A-L])\b/i;
+const COMPETITION_SEP = " · ";
 const KNOCKOUT_ROUNDS = [
   "Round of 32",
   "Round of 16",
   "Quarter-finals",
-  "Semi-finals",
-  "Third place",
+  "Semi Final 1",
+  "Semi Final 2",
+  "3rd Place Match",
   "Final",
 ] as const;
+
+const KNOCKOUT_ROUND_SET: ReadonlySet<string> = new Set(KNOCKOUT_ROUNDS);
 
 export type FixtureStage = "all" | `Group ${string}` | (typeof KNOCKOUT_ROUNDS)[number];
 
@@ -19,10 +23,8 @@ export function fixtureGroup(competition: string): string | null {
 }
 
 export function fixtureRound(competition: string): string | null {
-  for (const round of KNOCKOUT_ROUNDS) {
-    if (competition.includes(round)) return round;
-  }
-  return null;
+  const stage = competition.split(COMPETITION_SEP).pop()?.trim() ?? "";
+  return KNOCKOUT_ROUND_SET.has(stage) ? stage : null;
 }
 
 export function fixtureStage(competition: string): string | null {

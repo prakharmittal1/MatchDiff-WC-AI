@@ -1,5 +1,5 @@
 {
-  "built_at": "2026-06-27",
+  "built_at": "2026-07-09",
   "source": "https://fixturedownload.com/feed/json/fifa-world-cup-2026",
   "match_count": 104,
   "matches": [
@@ -785,17 +785,17 @@
     },
     {
       "home": "Mexico",
-      "away": "3rd place (C/E/F/H/I)",
+      "away": "Ecuador",
       "date": "2026-07-01",
-      "kickoff_iso": "2026-07-01T01:00:00.000Z",
+      "kickoff_iso": "2026-07-01T02:00:00.000Z",
       "location": "Mexico City Stadium",
       "city": "Mexico City",
       "round": "Round of 32",
       "match_number": 79
     },
     {
-      "home": "Winner Group L",
-      "away": "3rd place (E/H/I/J/K)",
+      "home": "England",
+      "away": "DR Congo",
       "date": "2026-07-01",
       "kickoff_iso": "2026-07-01T16:00:00.000Z",
       "location": "Atlanta Stadium",
@@ -805,7 +805,7 @@
     },
     {
       "home": "Belgium",
-      "away": "3rd place (A/E/H/I/J)",
+      "away": "Senegal",
       "date": "2026-07-01",
       "kickoff_iso": "2026-07-01T20:00:00.000Z",
       "location": "Seattle Stadium",
@@ -825,7 +825,7 @@
     },
     {
       "home": "Spain",
-      "away": "Runner-up Group J",
+      "away": "Austria",
       "date": "2026-07-02",
       "kickoff_iso": "2026-07-02T19:00:00.000Z",
       "location": "Los Angeles Stadium",
@@ -834,8 +834,8 @@
       "match_number": 84
     },
     {
-      "home": "Runner-up Group K",
-      "away": "Runner-up Group L",
+      "home": "Portugal",
+      "away": "Croatia",
       "date": "2026-07-02",
       "kickoff_iso": "2026-07-02T23:00:00.000Z",
       "location": "Toronto Stadium",
@@ -845,7 +845,7 @@
     },
     {
       "home": "Switzerland",
-      "away": "3rd place (E/F/G/I/J)",
+      "away": "Algeria",
       "date": "2026-07-03",
       "kickoff_iso": "2026-07-03T03:00:00.000Z",
       "location": "BC Place Vancouver",
@@ -874,8 +874,8 @@
       "match_number": 86
     },
     {
-      "home": "Winner Group K",
-      "away": "3rd place (D/E/I/J/L)",
+      "home": "Colombia",
+      "away": "Ghana",
       "date": "2026-07-04",
       "kickoff_iso": "2026-07-04T01:30:00.000Z",
       "location": "Kansas City Stadium",
@@ -884,8 +884,8 @@
       "match_number": 87
     },
     {
-      "home": "TBD",
-      "away": "TBD",
+      "home": "Canada",
+      "away": "Morocco",
       "date": "2026-07-04",
       "kickoff_iso": "2026-07-04T17:00:00.000Z",
       "location": "Houston Stadium",
@@ -894,8 +894,8 @@
       "match_number": 90
     },
     {
-      "home": "TBD",
-      "away": "TBD",
+      "home": "Paraguay",
+      "away": "France",
       "date": "2026-07-04",
       "kickoff_iso": "2026-07-04T21:00:00.000Z",
       "location": "Philadelphia Stadium",
@@ -904,8 +904,8 @@
       "match_number": 89
     },
     {
-      "home": "TBD",
-      "away": "TBD",
+      "home": "Brazil",
+      "away": "Norway",
       "date": "2026-07-05",
       "kickoff_iso": "2026-07-05T20:00:00.000Z",
       "location": "New York/New Jersey Stadium",
@@ -914,18 +914,18 @@
       "match_number": 91
     },
     {
-      "home": "TBD",
-      "away": "TBD",
+      "home": "Mexico",
+      "away": "England",
       "date": "2026-07-06",
-      "kickoff_iso": "2026-07-06T00:00:00.000Z",
+      "kickoff_iso": "2026-07-06T01:00:00.000Z",
       "location": "Mexico City Stadium",
       "city": "Mexico City",
       "round": "Round of 16",
       "match_number": 92
     },
     {
-      "home": "TBD",
-      "away": "TBD",
+      "home": "Portugal",
+      "away": "Spain",
       "date": "2026-07-06",
       "kickoff_iso": "2026-07-06T19:00:00.000Z",
       "location": "Dallas Stadium",
@@ -934,8 +934,8 @@
       "match_number": 93
     },
     {
-      "home": "TBD",
-      "away": "TBD",
+      "home": "United States",
+      "away": "Belgium",
       "date": "2026-07-07",
       "kickoff_iso": "2026-07-07T00:00:00.000Z",
       "location": "Seattle Stadium",
@@ -944,8 +944,8 @@
       "match_number": 94
     },
     {
-      "home": "TBD",
-      "away": "TBD",
+      "home": "Argentina",
+      "away": "Egypt",
       "date": "2026-07-07",
       "kickoff_iso": "2026-07-07T16:00:00.000Z",
       "location": "Atlanta Stadium",
@@ -954,8 +954,8 @@
       "match_number": 95
     },
     {
-      "home": "TBD",
-      "away": "TBD",
+      "home": "Switzerland",
+      "away": "Colombia",
       "date": "2026-07-07",
       "kickoff_iso": "2026-07-07T20:00:00.000Z",
       "location": "BC Place Vancouver",
@@ -964,8 +964,8 @@
       "match_number": 96
     },
     {
-      "home": "TBD",
-      "away": "TBD",
+      "home": "France",
+      "away": "Morocco",
       "date": "2026-07-09",
       "kickoff_iso": "2026-07-09T20:00:00.000Z",
       "location": "Boston Stadium",
@@ -974,8 +974,8 @@
       "match_number": 97
     },
     {
-      "home": "TBD",
-      "away": "TBD",
+      "home": "Spain",
+      "away": "Belgium",
       "date": "2026-07-10",
       "kickoff_iso": "2026-07-10T19:00:00.000Z",
       "location": "Los Angeles Stadium",
@@ -984,8 +984,8 @@
       "match_number": 98
     },
     {
-      "home": "TBD",
-      "away": "TBD",
+      "home": "Norway",
+      "away": "England",
       "date": "2026-07-11",
       "kickoff_iso": "2026-07-11T21:00:00.000Z",
       "location": "Miami Stadium",
@@ -994,8 +994,8 @@
       "match_number": 99
     },
     {
-      "home": "TBD",
-      "away": "TBD",
+      "home": "Argentina",
+      "away": "Switzerland",
       "date": "2026-07-12",
       "kickoff_iso": "2026-07-12T01:00:00.000Z",
       "location": "Kansas City Stadium",
@@ -1010,7 +1010,7 @@
       "kickoff_iso": "2026-07-14T19:00:00.000Z",
       "location": "Dallas Stadium",
       "city": "Dallas",
-      "round": "Semi-finals",
+      "round": "Semi Final 1",
       "match_number": 101
     },
     {
@@ -1020,7 +1020,7 @@
       "kickoff_iso": "2026-07-15T19:00:00.000Z",
       "location": "Atlanta Stadium",
       "city": "Atlanta",
-      "round": "Semi-finals",
+      "round": "Semi Final 2",
       "match_number": 102
     },
     {
@@ -1030,7 +1030,7 @@
       "kickoff_iso": "2026-07-18T21:00:00.000Z",
       "location": "Miami Stadium",
       "city": "Miami",
-      "round": "Third place",
+      "round": "3rd Place Match",
       "match_number": 103
     },
     {

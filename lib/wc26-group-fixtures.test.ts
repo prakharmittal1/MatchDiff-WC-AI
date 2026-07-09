@@ -18,8 +18,15 @@ describe("loadWc26Fixtures", () => {
     expect(fixtures[0]?.competition).toMatch(/Group A/);
     const r32 = fixtures.find((f) => f.competition.includes("Round of 32"));
     expect(r32?.competition).toBe("FIFA World Cup · Round of 32");
-    const finalMatch = fixtures.find((f) => f.competition.includes("Final"));
+    const finalMatch = fixtures.find((f) => f.competition === "FIFA World Cup · Final");
     expect(finalMatch?.competition).toBe("FIFA World Cup · Final");
+    const semis = fixtures.filter((f) => f.competition.includes("Semi Final"));
+    expect(semis.map((f) => f.competition).sort()).toEqual([
+      "FIFA World Cup · Semi Final 1",
+      "FIFA World Cup · Semi Final 2",
+    ]);
+    const thirdPlace = fixtures.find((f) => f.competition === "FIFA World Cup · 3rd Place Match");
+    expect(thirdPlace).toBeDefined();
   });
 
   it("merges Polymarket odds when home/away/date match", () => {
