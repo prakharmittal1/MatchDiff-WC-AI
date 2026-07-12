@@ -1,5 +1,5 @@
 {
-  "built_at": "2026-07-09",
+  "built_at": "2026-07-12",
   "source": "https://fixturedownload.com/feed/json/fifa-world-cup-2026",
   "match_count": 104,
   "matches": [
@@ -1004,8 +1004,8 @@
       "match_number": 100
     },
     {
-      "home": "TBD",
-      "away": "TBD",
+      "home": "France",
+      "away": "Spain",
       "date": "2026-07-14",
       "kickoff_iso": "2026-07-14T19:00:00.000Z",
       "location": "Dallas Stadium",
@@ -1014,8 +1014,8 @@
       "match_number": 101
     },
     {
-      "home": "TBD",
-      "away": "TBD",
+      "home": "England",
+      "away": "Argentina",
       "date": "2026-07-15",
       "kickoff_iso": "2026-07-15T19:00:00.000Z",
       "location": "Atlanta Stadium",
