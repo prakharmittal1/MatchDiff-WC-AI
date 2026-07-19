@@ -10,7 +10,7 @@ import { GroupFilter } from "@/app/components/GroupFilter";
 import { MatchAnalysisModal } from "@/app/components/MatchAnalysisModal";
 import { MatchGrid } from "@/app/components/MatchGrid";
 import { requestMatchAnalysis } from "@/lib/analyze-client";
-import { filterFixturesByGroup } from "@/lib/fixture-groups";
+import { filterFixturesByGroup, fixturesSectionTitle } from "@/lib/fixture-groups";
 import { filterUpcomingFixtures } from "@/lib/upcoming-fixtures";
 import type { AnalyzeResult } from "@/lib/alpha-types";
 import { FIFA_WC_2026_FIXTURES_URL, POLYMARKET_WC_GAMES_URL } from "@/lib/external-links";
@@ -63,6 +63,11 @@ export function Dashboard({ fixtures, initialMatchId = null }: Props) {
   const filteredFixtures = useMemo(
     () => filterFixturesByGroup(upcomingFixtures, selectedGroup),
     [upcomingFixtures, selectedGroup],
+  );
+
+  const sectionTitle = useMemo(
+    () => fixturesSectionTitle(upcomingFixtures),
+    [upcomingFixtures],
   );
 
   const syncMatchParam = useCallback((fixtureId?: string) => {
@@ -161,7 +166,7 @@ export function Dashboard({ fixtures, initialMatchId = null }: Props) {
 
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
           <p className="hero-lede max-w-2xl text-sm leading-relaxed">
-            Tap a match to see our model&apos;s prediction vs live Polymarket odds.
+            Tap the Final to see our model&apos;s prediction vs live Polymarket odds.
           </p>
           <p className="shrink-0 text-sm leading-relaxed sm:text-right">
             Schedule on{" "}
@@ -181,7 +186,7 @@ export function Dashboard({ fixtures, initialMatchId = null }: Props) {
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <h2 className="flex items-center gap-2 text-sm font-semibold text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]">
             <span aria-hidden className="inline-block size-2 rounded-full bg-emerald-400" />
-            Quarter-finals
+            {sectionTitle}
           </h2>
           <GroupFilter
             fixtures={upcomingFixtures}

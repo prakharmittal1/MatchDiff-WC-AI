@@ -15,7 +15,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: "What is MatchDiff?",
         answer:
-          "MatchDiff is a free research dashboard for the FIFA World Cup 2026 group stage. Each match tile shows live Polymarket win prices; tap a fixture to open our model read, how it compares to the market, and the data behind it (team ratings, form, venue, news, and head-to-head history).",
+          "MatchDiff is a free research dashboard for the FIFA World Cup 2026. Each match tile shows live Polymarket win prices; tap a fixture to open our model read, how it compares to the market, and the data behind it (team ratings, form, venue, news, and head-to-head history).",
       },
       {
         question: "Is MatchDiff a sportsbook or exchange?",

@@ -303,7 +303,7 @@ async function loadFootballDataOrBundled(stubDetail: string): Promise<FixturesBo
 
 const cachedDashboardFixtures = unstable_cache(
   async () => loadDashboardFixturesUncached(),
-  ["dashboard-fixtures-wc26-v2"],
+  ["dashboard-fixtures-wc26-v3-final"],
   { revalidate: 300 },
 );
 

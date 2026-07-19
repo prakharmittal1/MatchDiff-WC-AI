@@ -5,6 +5,7 @@ import {
   fixtureGroup,
   fixtureRound,
   fixtureStage,
+  fixturesSectionTitle,
   groupLetter,
   listFixtureStages,
 } from "@/lib/fixture-groups";
@@ -44,5 +45,18 @@ describe("fixtureGroup", () => {
     expect(filterFixturesByStage(fixtures, "Group B")).toHaveLength(1);
     expect(filterFixturesByStage(fixtures, "Round of 32")).toHaveLength(1);
     expect(filterFixturesByStage(fixtures, "all")).toHaveLength(3);
+  });
+
+  it("titles the section from the furthest knockout round", () => {
+    expect(fixturesSectionTitle([fx("FIFA World Cup · Final")])).toBe("Final");
+    expect(
+      fixturesSectionTitle([
+        fx("FIFA World Cup · Semi Final 1"),
+        fx("FIFA World Cup · Semi Final 2"),
+      ]),
+    ).toBe("Semi-finals");
+    expect(fixturesSectionTitle([fx("FIFA World Cup · Group A")])).toBe(
+      "Group stage - Fixtures",
+    );
   });
 });

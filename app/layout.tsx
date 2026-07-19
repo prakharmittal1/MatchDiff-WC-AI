@@ -19,7 +19,7 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "MatchDiff · World Cup 2026",
   description:
-    "World Cup 2026 group stage: live Polymarket prices on match tiles and MatchDiff analysis vs the market.",
+    "World Cup 2026 Final: live Polymarket odds on Spain vs Argentina and MatchDiff analysis vs the market.",
   applicationName: "MatchDiff",
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],

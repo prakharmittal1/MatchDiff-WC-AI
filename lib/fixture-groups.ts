@@ -49,6 +49,21 @@ export function listFixtureStages(fixtures: Fixture[]): string[] {
   return [...groups, ...rounds];
 }
 
+/** Section heading from the furthest knockout round still shown, else group stage. */
+export function fixturesSectionTitle(fixtures: Fixture[]): string {
+  const stages = listFixtureStages(fixtures);
+  if (stages.length === 0) return "Fixtures";
+  for (let i = KNOCKOUT_ROUNDS.length - 1; i >= 0; i--) {
+    const round = KNOCKOUT_ROUNDS[i]!;
+    if (stages.includes(round)) {
+      if (round === "Semi Final 1" || round === "Semi Final 2") return "Semi-finals";
+      return round;
+    }
+  }
+  if (stages.every((s) => s.startsWith("Group "))) return "Group stage - Fixtures";
+  return "Fixtures";
+}
+
 /** @deprecated Use listFixtureStages */
 export const listFixtureGroups = listFixtureStages;
 

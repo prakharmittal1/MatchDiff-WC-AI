@@ -19,14 +19,17 @@ describe("loadWc26Fixtures", () => {
     const r32 = fixtures.find((f) => f.competition.includes("Round of 32"));
     expect(r32?.competition).toBe("FIFA World Cup · Round of 32");
     const finalMatch = fixtures.find((f) => f.competition === "FIFA World Cup · Final");
-    expect(finalMatch?.competition).toBe("FIFA World Cup · Final");
+    expect(finalMatch?.home).toBe("Spain");
+    expect(finalMatch?.away).toBe("Argentina");
+    expect(finalMatch?.kickoff_iso).toBe("2026-07-19T19:00:00.000Z");
     const semis = fixtures.filter((f) => f.competition.includes("Semi Final"));
     expect(semis.map((f) => f.competition).sort()).toEqual([
       "FIFA World Cup · Semi Final 1",
       "FIFA World Cup · Semi Final 2",
     ]);
     const thirdPlace = fixtures.find((f) => f.competition === "FIFA World Cup · 3rd Place Match");
-    expect(thirdPlace).toBeDefined();
+    expect(thirdPlace?.home).toBe("France");
+    expect(thirdPlace?.away).toBe("England");
   });
 
   it("merges Polymarket odds when home/away/date match", () => {
