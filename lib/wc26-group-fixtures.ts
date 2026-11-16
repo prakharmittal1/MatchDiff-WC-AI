@@ -1,4 +1,5 @@
 import venuesData from "@/data/wc26-match-venues.json";
+import { oddsFromFifaRanks } from "@/lib/fifa-rank-odds";
 import type { Fixture } from "@/lib/fixtures";
 import type { ParsedWcGame } from "@/lib/polymarket-gamma";
 import { canonicalizeTeam } from "@/lib/teams";
@@ -59,6 +60,7 @@ export function loadWc26Fixtures(polymarketGames: ParsedWcGame[] = []): Fixture[
     const polyKey = polyLookupKey(row.home, row.away, row.date);
     const game = polyKey ? poly.get(polyKey) : undefined;
     const kickoff_iso = game?.kickoff_iso ?? row.kickoff_iso ?? `${row.date}T19:00:00Z`;
+    const rankOdds = game ? null : oddsFromFifaRanks(row.home, row.away);
 
     fixtures.push({
       id: fixtureId(row, fixtures.length),
@@ -67,11 +69,17 @@ export function loadWc26Fixtures(polymarketGames: ParsedWcGame[] = []): Fixture[
       kickoff_iso,
       competition: competitionLabel(row),
       venue: row.city,
-      market_home_win: game ? Number(game.prices.home.toFixed(4)) : 0.5,
-      market_draw: game ? Number(game.prices.draw.toFixed(4)) : null,
-      market_away_win: game ? Number(game.prices.away.toFixed(4)) : null,
-      market_three_way: game?.prices ?? null,
-      market_price_source: game ? "polymarket" : "none",
+      market_home_win: game
+        ? Number(game.prices.home.toFixed(4))
+        : (rankOdds?.home ?? 0.5),
+      market_draw: game
+        ? Number(game.prices.draw.toFixed(4))
+        : (rankOdds?.draw ?? null),
+      market_away_win: game
+        ? Number(game.prices.away.toFixed(4))
+        : (rankOdds?.away ?? null),
+      market_three_way: game?.prices ?? rankOdds,
+      market_price_source: game ? "polymarket" : rankOdds ? "fifa-rank" : "none",
       polymarket_event_slug: game?.event_slug ?? null,
       polymarket_market_slug: game?.event_slug ?? null,
       is_world_cup: true,

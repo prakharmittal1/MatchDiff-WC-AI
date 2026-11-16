@@ -249,22 +249,29 @@ export async function analyzeMatch(
       draw: input.market_draw,
       away: input.market_away_win,
     };
-    marketSource = "client";
+    marketSource =
+      input.market_price_source === "fifa-rank" ? "fifa-rank" : "client";
   }
 
-  try {
-    const quote = await quoteHomeMoneylineYes(input.home, input.away, input.kickoff_iso, {
-      eventSlug: input.polymarket_event_slug ?? input.polymarket_market_slug,
-    });
-    if (quote?.price !== undefined && Number.isFinite(quote.price)) {
-      p_market = quote.price;
-      marketSource = "polymarket";
-      marketSlug = quote.event_slug ?? quote.market_slug ?? marketSlug;
-      marketQuestion = quote.market_question ?? null;
-      marketThreeWay = quote.three_way ?? marketThreeWay;
+  const useClientMarketOnly =
+    input.market_price_source === "fifa-rank" ||
+    (marketThreeWay != null && input.market_price_source === "client");
+
+  if (!useClientMarketOnly) {
+    try {
+      const quote = await quoteHomeMoneylineYes(input.home, input.away, input.kickoff_iso, {
+        eventSlug: input.polymarket_event_slug ?? input.polymarket_market_slug,
+      });
+      if (quote?.price !== undefined && Number.isFinite(quote.price)) {
+        p_market = quote.price;
+        marketSource = "polymarket";
+        marketSlug = quote.event_slug ?? quote.market_slug ?? marketSlug;
+        marketQuestion = quote.market_question ?? null;
+        marketThreeWay = quote.three_way ?? marketThreeWay;
+      }
+    } catch {
+      data_gaps.push("Polymarket Gamma lookup failed");
     }
-  } catch {
-    data_gaps.push("Polymarket Gamma lookup failed");
   }
 
   if (p_market === null) {

@@ -22,6 +22,9 @@ describe("loadWc26Fixtures", () => {
     expect(finalMatch?.home).toBe("Spain");
     expect(finalMatch?.away).toBe("Argentina");
     expect(finalMatch?.kickoff_iso).toBe("2026-07-19T19:00:00.000Z");
+    expect(finalMatch?.market_price_source).toBe("fifa-rank");
+    expect(finalMatch?.market_draw).toBeGreaterThan(0);
+    expect(finalMatch!.market_home_win).toBeGreaterThan(finalMatch!.market_away_win!);
     const semis = fixtures.filter((f) => f.competition.includes("Semi Final"));
     expect(semis.map((f) => f.competition).sort()).toEqual([
       "FIFA World Cup · Semi Final 1",

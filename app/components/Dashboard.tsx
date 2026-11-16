@@ -20,6 +20,8 @@ import { formatChance } from "@/lib/ui-copy";
 type Props = {
   fixtures: Fixture[];
   initialMatchId?: string | null;
+  /** Archive keeps the full WC26 schedule after the tournament ends. */
+  mode?: "live" | "archive";
 };
 
 function buildShareUrl(fixtureId: string): string {
@@ -34,22 +36,28 @@ function findFixture(fixtures: Fixture[], id: string | null | undefined): Fixtur
   return fixtures.find((f) => f.id === id) ?? null;
 }
 
-export function Dashboard({ fixtures, initialMatchId = null }: Props) {
+export function Dashboard({
+  fixtures,
+  initialMatchId = null,
+  mode = "live",
+}: Props) {
+  const isArchive = mode === "archive";
   const [nowMs, setNowMs] = useState(() => Date.now());
 
   useEffect(() => {
+    if (isArchive) return;
     const id = window.setInterval(() => setNowMs(Date.now()), 60_000);
     return () => window.clearInterval(id);
-  }, []);
+  }, [isArchive]);
 
-  const upcomingFixtures = useMemo(
-    () => filterUpcomingFixtures(fixtures, nowMs),
-    [fixtures, nowMs],
+  const visibleFixtures = useMemo(
+    () => (isArchive ? fixtures : filterUpcomingFixtures(fixtures, nowMs)),
+    [fixtures, isArchive, nowMs],
   );
 
   const deepLinkFixture = useMemo(
-    () => findFixture(upcomingFixtures, initialMatchId),
-    [upcomingFixtures, initialMatchId],
+    () => findFixture(visibleFixtures, initialMatchId),
+    [visibleFixtures, initialMatchId],
   );
 
   const [activeId, setActiveId] = useState<string | undefined>(deepLinkFixture?.id);
@@ -61,13 +69,14 @@ export function Dashboard({ fixtures, initialMatchId = null }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const filteredFixtures = useMemo(
-    () => filterFixturesByGroup(upcomingFixtures, selectedGroup),
-    [upcomingFixtures, selectedGroup],
+    () => filterFixturesByGroup(visibleFixtures, selectedGroup),
+    [visibleFixtures, selectedGroup],
   );
 
   const sectionTitle = useMemo(
-    () => fixturesSectionTitle(upcomingFixtures),
-    [upcomingFixtures],
+    () =>
+      isArchive ? "World Cup 2026 fixtures" : fixturesSectionTitle(visibleFixtures),
+    [isArchive, visibleFixtures],
   );
 
   const syncMatchParam = useCallback((fixtureId?: string) => {
@@ -144,12 +153,22 @@ export function Dashboard({ fixtures, initialMatchId = null }: Props) {
 
   return (
     <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-5 py-8 sm:px-6">
-      <Link
-        href="/faq"
-        className="fixed right-5 top-5 z-40 rounded-lg border border-white/10 bg-black/45 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-emerald-300 shadow-lg shadow-black/20 backdrop-blur-sm transition-colors hover:border-emerald-400/40 hover:bg-black/55 hover:text-emerald-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 sm:right-6 sm:top-6"
-      >
-        FAQ
-      </Link>
+      <div className="fixed right-5 top-5 z-40 flex items-center gap-2 sm:right-6 sm:top-6">
+        {isArchive && (
+          <Link
+            href="/"
+            className="rounded-lg border border-amber-300/30 bg-black/45 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-amber-200 shadow-lg shadow-black/20 backdrop-blur-sm transition-colors hover:border-amber-300/50 hover:bg-black/55 hover:text-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/40"
+          >
+            Champions
+          </Link>
+        )}
+        <Link
+          href="/faq"
+          className="rounded-lg border border-white/10 bg-black/45 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-emerald-300 shadow-lg shadow-black/20 backdrop-blur-sm transition-colors hover:border-emerald-400/40 hover:bg-black/55 hover:text-emerald-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+        >
+          FAQ
+        </Link>
+      </div>
 
       <div className="page-hero flex flex-col gap-5 p-5 sm:p-6">
         <header className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
@@ -158,26 +177,48 @@ export function Dashboard({ fixtures, initialMatchId = null }: Props) {
           </Link>
           <div className="flex max-w-md flex-col gap-1 sm:items-end sm:text-right">
             <h1 className="hero-title text-2xl font-semibold leading-tight tracking-tight sm:text-[1.65rem]">
-              Beat the market{" "}
-              <span className="brand-marquee">before it catches up</span>
+              {isArchive ? (
+                <>
+                  How MatchDiff looked{" "}
+                  <span className="brand-marquee">during the World Cup</span>
+                </>
+              ) : (
+                <>
+                  Beat the market{" "}
+                  <span className="brand-marquee">before it catches up</span>
+                </>
+              )}
             </h1>
           </div>
         </header>
 
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
           <p className="hero-lede max-w-2xl text-sm leading-relaxed">
-            Tap the Final to see our model&apos;s prediction vs live Polymarket odds.
+            {isArchive
+              ? "Demo archive: tile odds and market comparisons are illustrative from FIFA rankings. Model reads still use ratings, form, and history."
+              : "Tap a match to see our model's prediction vs live Polymarket odds."}
           </p>
           <p className="shrink-0 text-sm leading-relaxed sm:text-right">
-            Schedule on{" "}
-            <a
-              href={FIFA_WC_2026_FIXTURES_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium text-emerald-300 underline decoration-emerald-300/45 underline-offset-2 hover:text-emerald-200 hover:decoration-emerald-200/70"
-            >
-              FIFA.com
-            </a>
+            {isArchive ? (
+              <Link
+                href="/"
+                className="font-medium text-amber-300 underline decoration-amber-300/45 underline-offset-2 hover:text-amber-200 hover:decoration-amber-200/70"
+              >
+                ← Back to champions
+              </Link>
+            ) : (
+              <>
+                Schedule on{" "}
+                <a
+                  href={FIFA_WC_2026_FIXTURES_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-emerald-300 underline decoration-emerald-300/45 underline-offset-2 hover:text-emerald-200 hover:decoration-emerald-200/70"
+                >
+                  FIFA.com
+                </a>
+              </>
+            )}
           </p>
         </div>
       </div>
@@ -189,7 +230,7 @@ export function Dashboard({ fixtures, initialMatchId = null }: Props) {
             {sectionTitle}
           </h2>
           <GroupFilter
-            fixtures={upcomingFixtures}
+            fixtures={visibleFixtures}
             value={selectedGroup}
             onChange={setSelectedGroup}
           />
@@ -229,14 +270,18 @@ export function Dashboard({ fixtures, initialMatchId = null }: Props) {
           <span aria-hidden className="text-emerald-200/40">
             ·
           </span>
-          <a
-            href={POLYMARKET_WC_GAMES_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline decoration-emerald-200/25 underline-offset-2 hover:text-emerald-100"
-          >
-            Polymarket odds
-          </a>
+          {isArchive ? (
+            <span>Illustrative FIFA-rank odds</span>
+          ) : (
+            <a
+              href={POLYMARKET_WC_GAMES_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-emerald-200/25 underline-offset-2 hover:text-emerald-100"
+            >
+              Polymarket odds
+            </a>
+          )}
           <span aria-hidden className="text-emerald-200/40">
             ·
           </span>

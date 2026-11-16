@@ -303,10 +303,20 @@ async function loadFootballDataOrBundled(stubDetail: string): Promise<FixturesBo
 
 const cachedDashboardFixtures = unstable_cache(
   async () => loadDashboardFixturesUncached(),
-  ["dashboard-fixtures-wc26-v3-final"],
+  ["dashboard-fixtures-wc26-v4-fifa-odds"],
   { revalidate: 300 },
 );
 
 export async function getCachedDashboardFixtures(): Promise<FixturesBootstrap> {
   return withUpcomingFixturesOnly(await cachedDashboardFixtures());
+}
+
+/** Full tournament schedule for the post-tournament archive (no live markets). */
+export async function getCachedArchiveFixtures(): Promise<FixturesBootstrap> {
+  const fixtures = loadWc26Fixtures([]);
+  return {
+    fixtures,
+    source: "bundled",
+    detail: `${fixtures.length} archive fixtures with illustrative FIFA-rank odds.`,
+  };
 }

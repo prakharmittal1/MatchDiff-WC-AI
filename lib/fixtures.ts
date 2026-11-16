@@ -11,7 +11,7 @@ import { tileCityForFixture } from "@/lib/match-context";
 import { canonicalizeTeam } from "@/lib/teams";
 import { lookupWc26ScheduledVenue } from "@/lib/wc26-schedule";
 
-export type FixturePriceSource = "polymarket" | "none";
+export type FixturePriceSource = "polymarket" | "fifa-rank" | "none";
 
 export type MarketThreeWay = {
   home: number;

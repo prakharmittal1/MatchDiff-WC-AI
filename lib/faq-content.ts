@@ -65,7 +65,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: "Why compare a model to Polymarket?",
         answer:
-          "Polymarket aggregates crowd belief in real time. Our pipeline blends structured football data with news and optional AI reasoning. Highlighting the gap helps you see where our read diverges from the market—not a guarantee that either side is “correct.”",
+          "Polymarket aggregates crowd belief in real time. Our pipeline blends structured football data with news and optional AI reasoning. Highlighting the gap helps you see where our read diverges from the market, not a guarantee that either side is “correct.”",
       },
       {
         question: "Do I need an account to use MatchDiff?",

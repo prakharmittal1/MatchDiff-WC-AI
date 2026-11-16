@@ -2,21 +2,27 @@ import type { AnalyzeResult } from "@/lib/alpha-types";
 import type { Fixture } from "@/lib/fixtures";
 
 export function buildAnalyzeRequestBody(f: Fixture) {
+  const isDemo = f.market_price_source === "fifa-rank";
+  const hasTileMarket =
+    f.market_price_source === "polymarket" || f.market_price_source === "fifa-rank";
+
   return {
     home: f.home,
     away: f.away,
     kickoff_iso: f.kickoff_iso,
     competition: f.competition,
-    p_market:
-      f.market_price_source === "polymarket" ? f.market_home_win : undefined,
-    market_draw: f.market_draw ?? undefined,
-    market_away_win: f.market_away_win ?? undefined,
-    polymarket_event_slug:
-      f.polymarket_event_slug ?? f.polymarket_market_slug ?? undefined,
-    polymarket_market_slug: f.polymarket_market_slug,
+    p_market: hasTileMarket ? f.market_home_win : undefined,
+    market_draw: hasTileMarket ? (f.market_draw ?? undefined) : undefined,
+    market_away_win: hasTileMarket ? (f.market_away_win ?? undefined) : undefined,
+    market_price_source: f.market_price_source ?? "none",
+    polymarket_event_slug: isDemo
+      ? undefined
+      : (f.polymarket_event_slug ?? f.polymarket_market_slug ?? undefined),
+    polymarket_market_slug: isDemo ? undefined : f.polymarket_market_slug,
     venue: f.venue,
     is_world_cup: f.is_world_cup ?? true,
-    include_sentiment: true,
+    // Archive / closed markets: no live news scrape.
+    include_sentiment: !isDemo,
   };
 }
 

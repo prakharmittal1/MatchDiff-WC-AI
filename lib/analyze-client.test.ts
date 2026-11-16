@@ -34,4 +34,16 @@ describe("buildAnalyzeRequestBody", () => {
     });
     expect(body.p_market).toBeUndefined();
   });
+
+  it("sends FIFA-rank demo odds and skips live news", () => {
+    const body = buildAnalyzeRequestBody({
+      ...fixture,
+      market_price_source: "fifa-rank",
+      polymarket_event_slug: null,
+    });
+    expect(body.p_market).toBe(0.58);
+    expect(body.market_price_source).toBe("fifa-rank");
+    expect(body.include_sentiment).toBe(false);
+    expect(body.polymarket_event_slug).toBeUndefined();
+  });
 });

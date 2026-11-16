@@ -124,7 +124,10 @@ export function MatchGrid({ fixtures, onAnalyze, activeId }: Props) {
                   teamAPrice={f.market_home_win}
                   drawPrice={f.market_draw}
                   teamBPrice={f.market_away_win}
-                  hasActiveOdds={f.market_price_source === "polymarket"}
+                  hasActiveOdds={
+                    f.market_price_source === "polymarket" ||
+                    f.market_price_source === "fifa-rank"
+                  }
                 />
               </div>
 

@@ -23,6 +23,9 @@ const BodySchema = z.object({
   p_market: z.number().gt(0).lt(1).optional().nullable(),
   market_draw: z.number().gt(0).lt(1).optional().nullable(),
   market_away_win: z.number().gt(0).lt(1).optional().nullable(),
+  market_price_source: z
+    .enum(["polymarket", "fifa-rank", "client", "none"])
+    .optional(),
   polymarket_market_slug: z.string().optional().nullable(),
   polymarket_event_slug: z.string().optional().nullable(),
   venue: z.string().optional().nullable(),
@@ -89,6 +92,7 @@ export async function POST(req: Request) {
         p_market: parsed.data.p_market ?? undefined,
         market_draw: parsed.data.market_draw ?? undefined,
         market_away_win: parsed.data.market_away_win ?? undefined,
+        market_price_source: parsed.data.market_price_source,
         polymarket_event_slug:
           parsed.data.polymarket_event_slug ??
           parsed.data.polymarket_market_slug ??

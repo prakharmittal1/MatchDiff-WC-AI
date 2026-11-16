@@ -22,7 +22,7 @@ export default function FaqPage() {
             href="/"
             className="text-sm font-medium text-emerald-300 underline decoration-emerald-300/40 underline-offset-2 hover:text-emerald-200"
           >
-            ← Back to matches
+            ← Back to champions
           </Link>
         </div>
 

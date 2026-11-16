@@ -26,6 +26,8 @@ export type AnalyzeMatchInput = {
   p_market?: number | null;
   market_draw?: number | null;
   market_away_win?: number | null;
+  /** When set, skip live Polymarket and treat client prices as the market. */
+  market_price_source?: "polymarket" | "fifa-rank" | "client" | "none";
   polymarket_market_slug?: string | null;
   polymarket_event_slug?: string | null;
   venue?: string | null;
@@ -98,7 +100,7 @@ export type AnalyzeResult = {
   adjustments: ModelAdjustments;
   market: {
     slug: string | null;
-    source: "polymarket" | "client" | "none";
+    source: "polymarket" | "fifa-rank" | "client" | "none";
     question?: string | null;
     home_win?: number | null;
     draw?: number | null;

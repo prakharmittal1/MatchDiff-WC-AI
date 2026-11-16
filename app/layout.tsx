@@ -17,9 +17,9 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MatchDiff · World Cup 2026",
+  title: "MatchDiff · Congratulations Spain",
   description:
-    "World Cup 2026 Final: live Polymarket odds on Spain vs Argentina and MatchDiff analysis vs the market.",
+    "Spain are FIFA World Cup 2026 champions. Celebrate with MatchDiff, then explore how the dashboard looked during the tournament.",
   applicationName: "MatchDiff",
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
@@ -28,14 +28,13 @@ export const metadata: Metadata = {
   },
   keywords: [
     "World Cup 2026",
+    "Spain",
     "FIFA",
-    "RAG",
-    "LLM",
-    "AI analyst",
+    "champions",
+    "MatchDiff",
     "Polymarket",
     "soccer",
     "football",
-    "win probability",
   ],
 };
 

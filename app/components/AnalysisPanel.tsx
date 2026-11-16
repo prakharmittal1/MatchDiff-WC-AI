@@ -60,7 +60,12 @@ export function AnalysisPanel({ result, loading, error }: Props) {
   const { match, p_model, p_market, breakdown, match_context } = result;
   const team = match.home;
   const opponent = match.away;
-  const polymarketUrl = result.market.slug ? polymarketMatchUrl(result.market.slug) : null;
+  const polymarketUrl =
+    result.market.source === "polymarket" && result.market.slug
+      ? polymarketMatchUrl(result.market.slug)
+      : null;
+  const marketLabel =
+    result.market.source === "fifa-rank" ? "Illustrative" : "Market";
   const injuryReports = result.sentiment?.injury_reports ?? [];
   const hasNewsContent =
     Boolean(result.sentiment) &&
@@ -84,6 +89,7 @@ export function AnalysisPanel({ result, loading, error }: Props) {
         team={team}
         pExpected={result.p_expected}
         pMarket={p_market}
+        marketLabel={marketLabel}
       />
 
       {result.adjustments.factors.length > 0 && (
@@ -336,11 +342,13 @@ function VerdictComparisonLine({
   pExpected,
   pMarket,
   gapPp,
+  marketLabel,
 }: {
   team: string;
   pExpected: number;
   pMarket: number | null;
   gapPp: number | null;
+  marketLabel: string;
 }) {
   const ourPct = formatChance(pExpected);
   const valueChip = "rounded-md px-2 py-0.5 font-bold tabular-nums shadow-sm";
@@ -374,7 +382,7 @@ function VerdictComparisonLine({
       <span className="text-slate-300" aria-hidden>
         ·
       </span>
-      <span className="font-medium text-slate-800">Market:</span>
+      <span className="font-medium text-slate-800">{marketLabel}:</span>
       <span className={marketChip}>{marketPct}</span>
       {gapLabel != null && (
         <>
@@ -394,11 +402,13 @@ function VerdictCard({
   team,
   pExpected,
   pMarket,
+  marketLabel,
 }: {
   verdict: MismatchVerdict;
   team: string;
   pExpected: number;
   pMarket: number | null;
+  marketLabel: string;
 }) {
   const styles = verdictStyles(verdict.alignment);
   const gapLabel = formatGapBadge(verdict.gap_pp);
@@ -418,6 +428,7 @@ function VerdictCard({
             pExpected={pExpected}
             pMarket={pMarket}
             gapPp={verdict.gap_pp}
+            marketLabel={marketLabel}
           />
           {verdict.takeaway && verdict.alignment !== "aligned" && (
             <p className="mt-2.5 text-sm leading-relaxed text-slate-700">{verdict.takeaway}</p>

@@ -1,17 +1,5 @@
-import { Dashboard } from "@/app/components/Dashboard";
-import { getCachedDashboardFixtures } from "@/lib/live-fixtures";
+import { ChampionsPage } from "@/app/components/ChampionsPage";
 
-type PageProps = {
-  searchParams: Promise<{ match?: string }>;
-};
-
-export default async function Home({ searchParams }: PageProps) {
-  const [{ match: initialMatchId }, bootstrap] = await Promise.all([
-    searchParams,
-    getCachedDashboardFixtures(),
-  ]);
-
-  return (
-    <Dashboard fixtures={bootstrap.fixtures} initialMatchId={initialMatchId ?? null} />
-  );
+export default function Home() {
+  return <ChampionsPage />;
 }
